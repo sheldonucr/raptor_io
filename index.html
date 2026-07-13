@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Raptor — Rapid Full-Chip Power Integrity Analysis and Visualization</title>
+<meta name="description" content="Raptor delivers rapid full-chip power integrity analysis and visualization — full transient power-grid (IR-drop) simulation for million-node designs, up to 11.9× faster than a direct solver with essentially exact waveforms. Powered by an advanced Krylov subspace reduction engine." />
+<meta property="og:title" content="Raptor — Rapid Full-Chip Power Integrity Analysis and Visualization" />
+<meta property="og:description" content="Rapid full-chip power integrity analysis and visualization: million-node transient power-grid simulation, up to 11.9× faster than a direct solver at machine-grade accuracy, powered by advanced Krylov subspace reduction." />
+<meta property="og:type" content="website" />
+<style>
+  :root{
+    --bg:#070b16; --bg-2:#0a1020; --surface:#0e1628; --surface-2:#13203b;
+    --border:rgba(148,163,184,.14); --border-strong:rgba(148,163,184,.26);
+    --text:#e9eef8; --muted:#9aabc6; --muted-2:#6f829f;
+    --cyan:#22d3ee; --blue:#3b82f6; --indigo:#6366f1; --violet:#8b5cf6;
+    --emerald:#34d399; --green:#4ade80; --amber:#fbbf24; --red:#ef4444;
+    --volt:linear-gradient(90deg,#1d4ed8 0%,#4f46e5 26%,#8b5cf6 48%,#22d3ee 74%,#34d399 100%);
+    --accent-grad:linear-gradient(135deg,#22d3ee 0%,#6366f1 55%,#8b5cf6 100%);
+    --radius:16px; --radius-sm:11px;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:var(--sans); line-height:1.6; -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background:
+      radial-gradient(900px 480px at 78% -8%, rgba(139,92,246,.16), transparent 60%),
+      radial-gradient(820px 520px at 8% 4%, rgba(34,211,238,.13), transparent 58%),
+      radial-gradient(1000px 700px at 50% 110%, rgba(52,211,153,.09), transparent 60%),
+      var(--bg);
+  }
+  a{color:inherit; text-decoration:none}
+  h1,h2,h3{line-height:1.12; margin:0; letter-spacing:-.02em; font-weight:700}
+  p{margin:0}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px}
+  .mono{font-family:var(--mono)}
+  .grad-text{
+    background:linear-gradient(100deg,#67e8f9 0%,#818cf8 45%,#34d399 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:sticky; top:0; z-index:50;
+    backdrop-filter:saturate(140%) blur(12px);
+    background:rgba(7,11,22,.72);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-inner{display:flex; align-items:center; justify-content:space-between; height:64px}
+  .brand{display:flex; align-items:center; gap:11px; font-weight:700; font-size:18px; letter-spacing:-.02em}
+  .brand .dot{
+    width:22px; height:22px; border-radius:7px; background:var(--volt);
+    box-shadow:0 0 0 1px rgba(255,255,255,.12), 0 0 18px rgba(139,92,246,.55);
+    position:relative; overflow:hidden;
+  }
+  .brand .dot::after{content:""; position:absolute; inset:0; background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.55), transparent 55%)}
+  .nav-links{display:flex; gap:30px; align-items:center}
+  .nav-links a{color:var(--muted); font-size:14.5px; font-weight:500; transition:color .15s}
+  .nav-links a:hover{color:var(--text)}
+  .nav-cta{display:flex; align-items:center; gap:14px}
+  .btn{
+    display:inline-flex; align-items:center; gap:9px; cursor:pointer; border:none;
+    font-family:var(--sans); font-weight:600; font-size:14.5px; line-height:1;
+    padding:12px 20px; border-radius:11px; transition:transform .12s ease, box-shadow .2s ease, background .2s;
+    white-space:nowrap;
+  }
+  .btn-primary{background:var(--accent-grad); color:#04101f; box-shadow:0 8px 26px -8px rgba(99,102,241,.6)}
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 14px 34px -8px rgba(99,102,241,.7)}
+  .btn-ghost{background:rgba(148,163,184,.08); color:var(--text); border:1px solid var(--border-strong)}
+  .btn-ghost:hover{background:rgba(148,163,184,.16); transform:translateY(-2px)}
+  .btn-lg{padding:15px 28px; font-size:15.5px; border-radius:13px}
+  .nav-toggle{display:none; background:none; border:none; color:var(--text); cursor:pointer; padding:6px}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative; padding:74px 0 64px}
+  .hero-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:54px; align-items:center}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:9px; font-family:var(--mono); font-size:12px;
+    letter-spacing:.16em; text-transform:uppercase; color:var(--cyan);
+    padding:7px 13px; border:1px solid var(--border-strong); border-radius:100px;
+    background:rgba(34,211,238,.06);
+  }
+  .eyebrow .pulse{width:7px; height:7px; border-radius:50%; background:var(--cyan); box-shadow:0 0 10px var(--cyan); animation:pulse 1.8s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .hero h1{font-size:clamp(34px,5.2vw,58px); margin:22px 0 0}
+  .hero p.lead{color:var(--muted); font-size:clamp(16px,1.7vw,19px); margin-top:20px; max-width:560px}
+  .hero-cta{display:flex; gap:14px; margin-top:32px; flex-wrap:wrap}
+  .hero-sub{margin-top:22px; display:flex; gap:22px; flex-wrap:wrap; color:var(--muted-2); font-size:13.5px}
+  .hero-sub span{display:inline-flex; align-items:center; gap:7px}
+  .check{color:var(--emerald)}
+
+  /* ---------- HERO VISUAL (power grid mesh) ---------- */
+  .viz-card{
+    position:relative; border:1px solid var(--border); border-radius:var(--radius);
+    background:linear-gradient(180deg,rgba(19,32,59,.85),rgba(10,16,32,.9));
+    box-shadow:0 30px 80px -30px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.04);
+    padding:18px; overflow:hidden;
+  }
+  .viz-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; padding:0 4px}
+  .viz-title{font-family:var(--mono); font-size:12px; color:var(--muted); letter-spacing:.04em}
+  .viz-dots{display:flex; gap:6px}
+  .viz-dots i{width:10px; height:10px; border-radius:50%; display:inline-block; opacity:.7}
+  .viz-dots i:nth-child(1){background:#8b5cf6}.viz-dots i:nth-child(2){background:#22d3ee}.viz-dots i:nth-child(3){background:#34d399}
+  .floorplan{width:100%; height:auto; display:block; border-radius:10px}
+  .hotspot{animation:glow 2.6s ease-in-out infinite}
+  .hotspot.b{animation-delay:.9s}.hotspot.c{animation-delay:1.6s}
+  @keyframes glow{0%,100%{opacity:.5}50%{opacity:1}}
+  .pulseline{stroke-dasharray:5 7; animation:dash 2.4s linear infinite}
+  @keyframes dash{to{stroke-dashoffset:-48}}
+  .scan{animation:scan 4.5s linear infinite}
+  @keyframes scan{0%{transform:translateY(0);opacity:0}8%{opacity:.7}50%{opacity:.25}92%{opacity:.7}100%{transform:translateY(228px);opacity:0}}
+
+  /* ---------- STATS STRIP ---------- */
+  .stats{border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:rgba(10,16,32,.5)}
+  .stats-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:0}
+  .stat{padding:30px 22px; text-align:center; border-right:1px solid var(--border)}
+  .stat:last-child{border-right:none}
+  .stat .num{font-family:var(--mono); font-size:clamp(26px,3.4vw,38px); font-weight:700; letter-spacing:-.03em}
+  .stat .num.c1{color:#a78bfa}.stat .num.c2{color:#22d3ee}.stat .num.c3{color:#34d399}.stat .num.c4{color:#60a5fa}
+  .stat .lbl{color:var(--muted); font-size:13.5px; margin-top:6px}
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:84px 0}
+  .sec-head{max-width:720px; margin-bottom:46px}
+  .kicker{font-family:var(--mono); font-size:12.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--violet)}
+  .sec-head h2{font-size:clamp(28px,3.6vw,42px); margin-top:14px}
+  .sec-head p{color:var(--muted); font-size:17px; margin-top:16px}
+
+  /* problem cards */
+  .cards-3{display:grid; grid-template-columns:repeat(3,1fr); gap:20px}
+  .card{
+    border:1px solid var(--border); border-radius:var(--radius); padding:26px;
+    background:linear-gradient(180deg,rgba(19,32,59,.5),rgba(12,19,36,.5)); transition:border-color .2s, transform .2s;
+  }
+  .card:hover{border-color:var(--border-strong); transform:translateY(-3px)}
+  .card .ic{
+    width:46px; height:46px; border-radius:12px; display:grid; place-items:center; margin-bottom:16px;
+    background:rgba(139,92,246,.1); border:1px solid var(--border-strong); font-size:22px;
+  }
+  .card h3{font-size:18.5px}
+  .card p{color:var(--muted); font-size:14.5px; margin-top:9px}
+
+  /* feature grid */
+  .features{display:grid; grid-template-columns:repeat(3,1fr); gap:20px}
+  .feat{border:1px solid var(--border); border-radius:var(--radius); padding:26px; background:rgba(14,22,40,.55); position:relative; overflow:hidden}
+  .feat::before{content:""; position:absolute; top:0; left:0; right:0; height:2px; background:var(--volt); opacity:.0; transition:opacity .25s}
+  .feat:hover::before{opacity:.85}
+  .feat:hover{border-color:var(--border-strong)}
+  .feat .tag{font-family:var(--mono); font-size:11.5px; color:var(--muted-2); letter-spacing:.08em}
+  .feat h3{font-size:18px; margin-top:10px; display:flex; align-items:center; gap:10px}
+  .feat p{color:var(--muted); font-size:14.5px; margin-top:10px}
+  .feat .emoji{font-size:22px}
+  .feat.wide{grid-column:1/-1; display:grid; grid-template-columns:1.15fr .85fr; gap:30px; align-items:center; border-color:rgba(52,211,153,.28)}
+  .feat.wide::before{opacity:.85}
+  .feat.wide .dd-viz{border:1px solid var(--border); border-radius:var(--radius-sm); background:rgba(7,11,22,.5); padding:10px}
+  .feat.wide .dd-viz svg{display:block; width:100%; height:auto}
+  .dd-chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px}
+  .dd-chips .chip{color:var(--emerald); background:rgba(52,211,153,.06)}
+  @media(max-width:900px){.feat.wide{grid-template-columns:1fr}}
+
+  /* technology */
+  .tech-grid{display:grid; grid-template-columns:1fr 1fr; gap:44px; align-items:start}
+  .pipe{display:flex; flex-direction:column; gap:14px}
+  .pipe-step{
+    display:flex; gap:16px; align-items:flex-start; padding:18px 20px; border:1px solid var(--border);
+    border-radius:var(--radius-sm); background:rgba(14,22,40,.6); position:relative;
+  }
+  .pipe-step .n{
+    flex:none; width:34px; height:34px; border-radius:9px; display:grid; place-items:center;
+    font-family:var(--mono); font-weight:700; font-size:15px; color:#04101f; background:var(--accent-grad);
+  }
+  .pipe-step h4{margin:0 0 4px; font-size:16px}
+  .pipe-step p{color:var(--muted); font-size:14px}
+  .pipe-step::after{content:""; position:absolute; left:36px; bottom:-14px; width:2px; height:14px; background:var(--border-strong)}
+  .pipe-step:last-child::after{display:none}
+  .eqbox{
+    margin-top:8px; border:1px solid var(--border); border-radius:var(--radius); padding:22px 24px;
+    background:linear-gradient(180deg,rgba(19,32,59,.6),rgba(10,16,32,.7));
+  }
+  .eqbox .label{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--violet)}
+  .eqbox .why{color:var(--muted); font-size:14.5px; line-height:1.66; margin:12px 0 2px}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:18px}
+  .chip{font-family:var(--mono); font-size:12px; color:var(--cyan); border:1px solid var(--border-strong); border-radius:100px; padding:6px 12px; background:rgba(34,211,238,.06)}
+  .twocard{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:8px}
+  .solver{border:1px solid var(--border); border-radius:var(--radius-sm); padding:18px; background:rgba(14,22,40,.6)}
+  .solver .nm{font-family:var(--mono); font-weight:700; font-size:15px}
+  .solver.fast .nm{color:#34d399}.solver.acc .nm{color:#a78bfa}
+  .solver .role{font-size:11.5px; color:var(--muted-2); font-family:var(--mono); letter-spacing:.05em; text-transform:uppercase; margin-top:3px}
+  .solver p{color:var(--muted); font-size:13px; margin-top:10px}
+  .solver .kv{margin-top:12px; display:flex; gap:16px; font-family:var(--mono); font-size:12.5px}
+  .solver .kv b{color:var(--text)}
+  .solver .paren{color:var(--muted-2); font-weight:400; font-size:.82em}
+
+  /* agentic flow */
+  .flowpts{list-style:none; padding:0; margin:6px 0 0; display:flex; flex-direction:column; gap:15px}
+  .flowpts li{position:relative; padding-left:26px; color:var(--muted); font-size:14.5px; line-height:1.6}
+  .flowpts li::before{content:"→"; position:absolute; left:0; top:0; color:var(--cyan); font-family:var(--mono)}
+  .flowpts li b{color:var(--text)}
+  .floloop{border:1px solid var(--border); border-radius:var(--radius); padding:20px; background:linear-gradient(180deg,rgba(19,32,59,.5),rgba(10,16,32,.6))}
+  .floloop-head{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted-2); display:flex; align-items:center; gap:9px; margin-bottom:14px}
+  .loopdot{width:8px; height:8px; border-radius:50%; background:var(--cyan); box-shadow:0 0 10px var(--cyan); flex:none}
+  .flonode{border:1px solid var(--border-strong); border-radius:var(--radius-sm); padding:14px 16px; background:rgba(14,22,40,.7)}
+  .flonode .ft{font-family:var(--mono); font-size:13px; color:var(--cyan)}
+  .flonode.engine{border-color:rgba(139,92,246,.32)}
+  .flonode.engine .ft{color:#a78bfa}
+  .flonode .fd{color:var(--muted); font-size:13px; margin-top:5px; line-height:1.55}
+  .floarrow{display:flex; align-items:center; gap:9px; padding:9px 0 9px 4px; color:var(--muted-2); font-size:12.5px; font-family:var(--mono)}
+  .floarrow .ax{color:var(--cyan); font-size:16px; line-height:1}
+
+  /* results */
+  .res-group{margin-bottom:36px}
+  .res-label{font-family:var(--mono); font-size:12.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--cyan); display:flex; align-items:center; gap:14px; margin:0 0 18px}
+  .res-label::after{content:""; flex:1; height:1px; background:var(--border)}
+  .res-label.warm{color:var(--emerald)}
+  .res-grid{display:grid; grid-template-columns:1fr 1fr; gap:22px}
+  .panel{
+    border:1px solid var(--border); border-radius:var(--radius); padding:26px;
+    background:linear-gradient(180deg,rgba(19,32,59,.5),rgba(12,19,36,.55));
+  }
+  .panel.full{grid-column:1/-1}
+  .panel .phead{display:flex; align-items:baseline; justify-content:space-between; gap:14px; margin-bottom:6px; flex-wrap:wrap}
+  .panel h3{font-size:19px}
+  .panel .psub{color:var(--muted); font-size:13.5px}
+  .badge{font-family:var(--mono); font-size:11.5px; padding:5px 10px; border-radius:100px; border:1px solid var(--border-strong); color:var(--cyan); background:rgba(34,211,238,.06); white-space:nowrap}
+  .badge.warn{color:var(--emerald); background:rgba(52,211,153,.07)}
+  table.data{width:100%; border-collapse:collapse; margin-top:14px; font-size:14px}
+  table.data th,table.data td{text-align:left; padding:10px 8px; border-bottom:1px solid var(--border)}
+  table.data th{color:var(--muted-2); font-weight:600; font-family:var(--mono); font-size:11.5px; letter-spacing:.05em; text-transform:uppercase}
+  table.data td.mono{font-family:var(--mono)}
+  table.data tr:last-child td{border-bottom:none}
+  table.data tr.total td{font-weight:700; color:var(--text)}
+  table.data tr.win td{color:#6ee7b7; font-weight:700}
+  .muted-tag{color:var(--muted-2); font-weight:400; font-size:.85em}
+  .tbl-scroll{overflow-x:auto}
+  .bars{margin-top:8px}
+  .bar-row{display:grid; grid-template-columns:150px 1fr 74px; align-items:center; gap:12px; margin:13px 0}
+  .bar-row .blab{font-size:13.5px; color:var(--muted)}
+  .bar-track{height:14px; border-radius:8px; background:rgba(148,163,184,.1); overflow:hidden}
+  .bar-fill{height:100%; border-radius:8px; background:var(--volt); transform-origin:left; transform:scaleX(0); transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
+  .bar-row .bval{font-family:var(--mono); font-size:13.5px; text-align:right; color:var(--text)}
+  .note{color:var(--muted-2); font-size:12.5px; margin-top:16px; line-height:1.65}
+
+  /* figures (charts) */
+  .fig{border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; background:rgba(10,15,28,.6); margin-top:22px}
+  .fig img{display:block; width:100%; height:auto; padding:14px}
+  .fig figcaption{padding:13px 18px; color:var(--muted); font-size:13px; border-top:1px solid var(--border); line-height:1.55}
+  .fig figcaption b{color:var(--text)}
+  .fig .ph{display:none}
+  .fig.noimg img{display:none}
+  .fig.noimg .ph{display:flex; min-height:200px; align-items:center; justify-content:center; text-align:center;
+    color:var(--muted-2); font-size:12.5px; padding:28px; font-family:var(--mono);
+    background:repeating-linear-gradient(45deg,rgba(148,163,184,.05),rgba(148,163,184,.05) 12px,transparent 12px,transparent 24px)}
+
+  /* per-design 3-up view rows (structure / 2D drop / 3D drop) */
+  .design-row{margin-top:22px}
+  .design-row .drow-head{font-family:var(--mono); font-size:13px; color:var(--text); display:flex; align-items:baseline; gap:10px; margin:0 0 12px}
+  .design-row .drow-head .dtag{font-size:11px; letter-spacing:.05em; color:var(--muted-2)}
+  .fig-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+  .fig-3 .fig{margin-top:0}
+  .fig-3 .fig img{aspect-ratio:auto; background:#fff}
+  .fig .step{font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:var(--cyan); display:block; margin-bottom:3px; text-transform:uppercase}
+  @media(max-width:820px){.fig-3{grid-template-columns:1fr}}
+
+  /* tool-flow diagram */
+  .toolflow{border:1px solid var(--border); border-radius:var(--radius); padding:24px; background:linear-gradient(180deg,rgba(19,32,59,.5),rgba(10,16,32,.6)); margin-top:26px}
+  .tf-head{font-family:var(--mono); font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted-2); display:flex; align-items:center; gap:9px; margin-bottom:18px}
+  .tf-row{display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:14px; align-items:stretch}
+  .tf-stage{border:1px solid var(--border-strong); border-radius:var(--radius-sm); padding:16px; background:rgba(14,22,40,.7); display:flex; flex-direction:column; gap:12px}
+  .tf-stage.engine{border-color:rgba(139,92,246,.3); background:rgba(19,32,59,.85)}
+  .tf-label{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--cyan)}
+  .tf-stage.engine .tf-label{color:var(--text)}
+  .tf-item{display:flex; gap:10px; align-items:flex-start}
+  .tf-ic{font-size:16px; line-height:1.3; flex:none}
+  .tf-swatch{width:17px; height:17px; border-radius:5px; background:var(--volt); flex:none; box-shadow:0 0 0 1px rgba(255,255,255,.12); margin-top:1px}
+  .tf-tx{display:flex; flex-direction:column}
+  .tf-tx b{font-size:13.5px; color:var(--text)}
+  .tf-tx span{font-size:12px; color:var(--muted)}
+  .tf-algo{border:1px solid var(--border-strong); border-radius:9px; padding:10px 12px; display:flex; flex-direction:column; gap:2px}
+  .tf-algo.acc{border-color:rgba(167,139,250,.4); background:rgba(139,92,246,.06)}
+  .tf-algo.fast{border-color:rgba(52,211,153,.4); background:rgba(52,211,153,.06)}
+  .tf-algo b{font-size:12.5px; font-family:var(--mono)}
+  .tf-algo.acc b{color:#a78bfa}
+  .tf-algo.fast b{color:#34d399}
+  .tf-algo span{font-size:11.5px; color:var(--muted)}
+  .tf-arrow{display:flex; align-items:center; justify-content:center; color:var(--cyan); font-size:20px; font-family:var(--mono)}
+  @media(max-width:760px){
+    .tf-row{grid-template-columns:1fr}
+    .tf-arrow{transform:rotate(90deg); padding:4px 0}
+  }
+
+  /* CTA */
+  .cta-band{
+    border:1px solid var(--border-strong); border-radius:24px; padding:54px 44px; text-align:center; position:relative; overflow:hidden;
+    background:linear-gradient(180deg,rgba(19,32,59,.8),rgba(10,16,32,.92));
+  }
+  .cta-band::before{content:""; position:absolute; inset:0; z-index:0; opacity:.5;
+    background:radial-gradient(600px 240px at 50% -20%, rgba(139,92,246,.22), transparent 60%),radial-gradient(500px 240px at 50% 120%, rgba(34,211,238,.18), transparent 60%)}
+  .cta-band>*{position:relative; z-index:1}
+  .cta-band h2{font-size:clamp(28px,3.6vw,40px)}
+  .cta-band p{color:var(--muted); font-size:17px; margin:16px auto 28px; max-width:560px}
+  .cta-btns{display:flex; gap:14px; justify-content:center; flex-wrap:wrap}
+  .cta-meta{margin-top:20px; color:var(--muted-2); font-size:13.5px; font-family:var(--mono)}
+
+  /* footer */
+  footer{border-top:1px solid var(--border); padding:46px 0 40px; margin-top:30px}
+  .foot-grid{display:flex; justify-content:space-between; gap:30px; flex-wrap:wrap; align-items:flex-start}
+  .foot-brand{max-width:340px}
+  .foot-brand p{color:var(--muted); font-size:14px; margin-top:12px}
+  .foot-cols{display:flex; gap:64px; flex-wrap:wrap}
+  .foot-col h5{font-family:var(--mono); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted-2); margin:0 0 14px}
+  .foot-col a,.foot-col span{display:block; color:var(--muted); font-size:14px; margin-bottom:9px; transition:color .15s}
+  .foot-col a:hover{color:var(--text)}
+  .cite{margin-top:34px; padding-top:22px; border-top:1px solid var(--border); color:var(--muted-2); font-size:12.5px; line-height:1.75}
+  .cite b{color:var(--muted)}
+  .copyright{margin-top:18px; color:var(--muted-2); font-size:13px}
+
+  /* reveal */
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease}
+  .reveal.in{opacity:1; transform:none}
+
+  /* responsive */
+  @media(max-width:900px){
+    .hero-grid{grid-template-columns:1fr; gap:38px}
+    .tech-grid{grid-template-columns:1fr; gap:30px}
+    .stats-grid{grid-template-columns:repeat(2,1fr)}
+    .stat:nth-child(2){border-right:none}
+    .stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--border)}
+    .cards-3,.features,.res-grid{grid-template-columns:1fr}
+    .nav-links{display:none}
+    .nav-links.open{display:flex; position:absolute; top:64px; left:0; right:0; flex-direction:column; gap:0; background:rgba(8,12,24,.98); border-bottom:1px solid var(--border); padding:8px 0}
+    .nav-links.open a{padding:13px 24px}
+    .nav-toggle{display:block}
+    section{padding:62px 0}
+  }
+  @media(max-width:560px){
+    .stats-grid{grid-template-columns:1fr}
+    .stat{border-right:none; border-bottom:1px solid var(--border)}
+    .bar-row{grid-template-columns:110px 1fr 60px}
+    .twocard{grid-template-columns:1fr}
+    .cta-band{padding:38px 22px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top"><span class="dot"></span>Raptor</a>
+    <nav class="nav-links" id="navlinks">
+      <a href="#features">Features</a>
+      <a href="#agentic">Agentic flow</a>
+      <a href="#technology">Technology</a>
+      <a href="#results">Results</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-primary" href="#contact">Request access</a>
+      <button class="nav-toggle" id="navtoggle" aria-label="Menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<a id="top"></a>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow"><span class="pulse"></span>Full-chip power integrity</span>
+      <h1>Rapid Full-Chip <span class="grad-text">Power Integrity</span> Analysis and Visualization</h1>
+      <p class="lead"><b style="color:var(--text)">Raptor</b> — <b style="color:var(--text)">R</b>apid <b style="color:var(--text)">A</b>nalysis of <b style="color:var(--text)">P</b>ower-grid <b style="color:var(--text)">T</b>ransients via <b style="color:var(--text)">O</b>rder <b style="color:var(--text)">R</b>eduction — runs full transient power-grid (P/G) simulation on million-node designs in a fraction of the time of a direct solver — with waveforms that match it to machine precision. Sweep power scenarios, close timing, and check dynamic IR-drop where a single full transient run used to be your whole budget.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href="#contact">Request access</a>
+        <a class="btn btn-ghost btn-lg" href="#results">See the results</a>
+      </div>
+      <div class="hero-sub">
+        <span><span class="check">✦</span> Essentially exact vs. direct solve</span>
+        <span><span class="check">✦</span> Validated to 1.04M nodes</span>
+        <span><span class="check">✦</span> Advanced Krylov subspace reduction</span>
+      </div>
+    </div>
+
+    <!-- Power-grid mesh visual -->
+    <div class="viz-card reveal">
+      <div class="viz-head">
+        <span class="viz-title">ibmpg · dynamic IR-drop · mV</span>
+        <span class="viz-dots"><i></i><i></i><i></i></span>
+      </div>
+      <svg class="floorplan" viewBox="0 0 520 360" role="img" aria-label="Power-grid mesh with IR-drop coloring and a transient waveform">
+        <defs>
+          <radialGradient id="dropHot" cx="50%" cy="50%" r="55%">
+            <stop offset="0%" stop-color="#c4b5fd"/><stop offset="30%" stop-color="#8b5cf6"/>
+            <stop offset="66%" stop-color="#6d28d9" stop-opacity=".5"/><stop offset="100%" stop-color="#4c1d95" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="dropWarm" cx="50%" cy="50%" r="55%">
+            <stop offset="0%" stop-color="#67e8f9"/><stop offset="48%" stop-color="#22d3ee" stop-opacity=".6"/>
+            <stop offset="100%" stop-color="#0891b2" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="dropCool" cx="50%" cy="50%" r="60%">
+            <stop offset="0%" stop-color="#6ee7b7"/><stop offset="55%" stop-color="#34d399" stop-opacity=".45"/>
+            <stop offset="100%" stop-color="#059669" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="bar" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#059669"/><stop offset="30%" stop-color="#22d3ee"/>
+            <stop offset="62%" stop-color="#6366f1"/><stop offset="100%" stop-color="#8b5cf6"/>
+          </linearGradient>
+          <linearGradient id="die" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#13203b"/><stop offset="100%" stop-color="#0c1426"/>
+          </linearGradient>
+        </defs>
+
+        <!-- chip substrate -->
+        <rect x="20" y="20" width="430" height="320" rx="12" fill="url(#die)" stroke="rgba(148,163,184,.25)"/>
+        <text x="34" y="42" font-family="ui-monospace,monospace" font-size="11" fill="#6f829f">P/G mesh</text>
+
+        <!-- IR-drop fields -->
+        <ellipse class="hotspot" cx="165" cy="165" rx="120" ry="104" fill="url(#dropHot)"/>
+        <ellipse class="hotspot b" cx="330" cy="130" rx="84" ry="72" fill="url(#dropWarm)"/>
+        <ellipse class="hotspot c" cx="335" cy="270" rx="90" ry="76" fill="url(#dropCool)"/>
+
+        <!-- grid mesh -->
+        <g stroke="rgba(148,163,184,.30)" stroke-width="1">
+          <line x1="60" y1="60" x2="60" y2="300"/><line x1="108" y1="60" x2="108" y2="300"/>
+          <line x1="156" y1="60" x2="156" y2="300"/><line x1="204" y1="60" x2="204" y2="300"/>
+          <line x1="252" y1="60" x2="252" y2="300"/><line x1="300" y1="60" x2="300" y2="300"/>
+          <line x1="348" y1="60" x2="348" y2="300"/><line x1="396" y1="60" x2="396" y2="300"/>
+          <line x1="60" y1="60" x2="396" y2="60"/><line x1="60" y1="108" x2="396" y2="108"/>
+          <line x1="60" y1="156" x2="396" y2="156"/><line x1="60" y1="204" x2="396" y2="204"/>
+          <line x1="60" y1="252" x2="396" y2="252"/><line x1="60" y1="300" x2="396" y2="300"/>
+        </g>
+        <!-- worst-drop node markers -->
+        <g>
+          <circle cx="156" cy="156" r="6" fill="#c4b5fd"/><circle cx="156" cy="156" r="11" fill="none" stroke="#8b5cf6" stroke-opacity=".7"/>
+          <circle cx="204" cy="204" r="5" fill="#a78bfa"/>
+          <circle cx="108" cy="204" r="4.5" fill="#818cf8"/>
+          <circle cx="348" cy="108" r="4" fill="#22d3ee"/>
+          <circle cx="348" cy="252" r="4" fill="#34d399"/>
+        </g>
+        <!-- current-source stubs -->
+        <g stroke="#8b5cf6" stroke-width="2" opacity=".8">
+          <path class="pulseline" d="M156,300 L156,326"/><path class="pulseline" d="M252,300 L252,326"/><path class="pulseline" d="M348,300 L348,326"/>
+        </g>
+
+        <!-- transient waveform inset -->
+        <g>
+          <rect x="150" y="70" width="150" height="66" rx="7" fill="rgba(7,11,22,.72)" stroke="rgba(148,163,184,.22)"/>
+          <text x="160" y="86" font-family="ui-monospace,monospace" font-size="9.5" fill="#9aabc6">V(t) · worst node</text>
+          <path d="M158,124 C176,124 184,100 200,98 C214,96 220,110 236,108 C252,106 262,92 292,90"
+                fill="none" stroke="#8b5cf6" stroke-width="3.4" stroke-opacity=".4" stroke-linecap="round"/>
+          <path d="M158,124 C176,124 184,101 200,99 C214,97 220,111 236,109 C252,107 262,93 292,91"
+                fill="none" stroke="#34d399" stroke-width="1.6" stroke-linecap="round"/>
+        </g>
+
+        <!-- scan line -->
+        <rect class="scan" x="20" y="20" width="430" height="3" fill="#8b5cf6" opacity=".0"/>
+
+        <!-- colorbar -->
+        <rect x="472" y="40" width="20" height="280" rx="6" fill="url(#bar)"/>
+        <g font-family="ui-monospace,monospace" font-size="10.5" fill="#9aabc6">
+          <text x="468" y="44" text-anchor="end">120</text>
+          <text x="468" y="184" text-anchor="end">60</text>
+          <text x="468" y="322" text-anchor="end">0</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATS ============ -->
+<div class="stats">
+  <div class="wrap stats-grid">
+    <div class="stat reveal"><div class="num c1">11.9×</div><div class="lbl">faster than direct transient solve</div></div>
+    <div class="stat reveal"><div class="num c2">&lt;6e-6</div><div class="lbl">max normalized error vs. direct</div></div>
+    <div class="stat reveal"><div class="num c3">1.04M</div><div class="lbl">nodes in largest validated grid</div></div>
+    <div class="stat reveal"><div class="num c4">3</div><div class="lbl">IBM power-grid benchmarks</div></div>
+  </div>
+</div>
+
+<!-- ============ PROBLEM ============ -->
+<section id="why">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">The bottleneck</div>
+      <h2>Transient power-grid sign-off doesn't scale</h2>
+      <p>Dynamic IR-drop is decided by the full time-domain response of a mesh with millions of nodes, thousands of switching current sources, and thousands of time steps. A direct solver re-solves that giant system step after step — accurate, but far too slow to keep in a design loop.</p>
+    </div>
+    <div class="cards-3">
+      <div class="card reveal">
+        <div class="ic">🕸️</div>
+        <h3>The grid is enormous</h3>
+        <p>Modern power grids reach millions of RC nodes across many metal layers. Every added node grows the linear system that must be solved at each of thousands of transient time points.</p>
+      </div>
+      <div class="card reveal">
+        <div class="ic">🐌</div>
+        <h3>Direct transient solves crawl</h3>
+        <p>Back-Euler with a sparse factorization is the trusted reference, but it re-solves the full mesh step after step. On the largest IBM grid that's over three minutes for a single run — impossible for the thousands of scenarios sign-off demands.</p>
+      </div>
+      <div class="card reveal">
+        <div class="ic">🔁</div>
+        <h3>IR-drop must be in the loop</h3>
+        <p>Floorplanning, decap budgeting, and power delivery all need dynamic-IR feedback per iteration. Without a fast, accurate transient engine, IR-drop gets checked last — when it's most expensive to fix.</p>
+      </div>
+    </div>
+    <div class="toolflow reveal">
+      <div class="tf-head"><span class="loopdot"></span>The Raptor flow — netlist in, transient waveforms out</div>
+      <div class="tf-row">
+        <div class="tf-stage">
+          <div class="tf-label">Inputs</div>
+          <div class="tf-item"><span class="tf-ic">🔌</span><span class="tf-tx"><b>P/G netlist</b><span>RC mesh · G, C, sources</span></span></div>
+          <div class="tf-item"><span class="tf-ic">⚡</span><span class="tf-tx"><b>Current waveforms</b><span>switching PWL sources</span></span></div>
+          <div class="tf-item"><span class="tf-ic">🎯</span><span class="tf-tx"><b>Probe nodes</b><span>the nets you care about</span></span></div>
+        </div>
+        <div class="tf-arrow">→</div>
+        <div class="tf-stage engine">
+          <div class="tf-label">Raptor · pick the solver</div>
+          <div class="tf-algo fast"><b>Raptor · advanced Krylov</b><span>rational subspace — fastest</span></div>
+          <div class="tf-algo acc"><b>Krylov method</b><span>standard subspace — most accurate</span></div>
+        </div>
+        <div class="tf-arrow">→</div>
+        <div class="tf-stage">
+          <div class="tf-label">Transient results</div>
+          <div class="tf-item"><span class="tf-swatch"></span><span class="tf-tx"><b>Node waveforms</b><span>V(t) at every probe</span></span></div>
+          <div class="tf-item"><span class="tf-swatch"></span><span class="tf-tx"><b>Dynamic IR-drop</b><span>worst-case droop &amp; timing</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">What it does</div>
+      <h2>One engine, the full transient picture</h2>
+      <p>Raptor pairs an advanced Krylov subspace reduction solver with a direct back-Euler reference, delivering full transient power-grid waveforms on the very same netlist — fast enough to iterate, accurate enough to sign off. And when one machine isn't enough, a domain decomposition method scales the simulation out across CPU cores and GPUs.</p>
+    </div>
+    <div class="features">
+      <div class="feat reveal">
+        <div class="tag">TRANSIENT</div>
+        <h3><span class="emoji">📈</span> Full time-domain waveforms</h3>
+        <p>Drive the grid with arbitrary switching-current waveforms and get the complete voltage history at every probe node — dynamic IR-drop, droop, and settling, step by step across thousands of time points.</p>
+      </div>
+      <div class="feat reveal">
+        <div class="tag">SPEED</div>
+        <h3><span class="emoji">⚡</span> Up to 11.9× faster</h3>
+        <p>Advanced Krylov reduction replaces the repeated full-grid solve with a tiny reduced model. Raptor returns the same transient in up to 11.9× less CPU time than a direct back-Euler solver — and the gap grows with grid size.</p>
+      </div>
+      <div class="feat reveal">
+        <div class="tag">ACCURACY</div>
+        <h3><span class="emoji">🎯</span> Essentially exact</h3>
+        <p>Reduced waveforms track the direct solver to a maximum normalized error under 6×10⁻⁶ — visually indistinguishable, safe for sign-off. The standard-Krylov mode reaches machine precision (≈10⁻¹⁴).</p>
+      </div>
+      <div class="feat reveal">
+        <div class="tag">SCALE</div>
+        <h3><span class="emoji">🕸️</span> Million-node grids</h3>
+        <p>Validated on the IBM power-grid benchmarks from 54K up to 1.04M nodes, with hundreds of thousands of switching current sources — real, published, industrial-scale meshes.</p>
+      </div>
+      <div class="feat reveal">
+        <div class="tag">METHOD</div>
+        <h3><span class="emoji">🧮</span> Advanced Krylov reduction</h3>
+        <p>A rational Krylov subspace captures the grid's dominant dynamics in an order-10 model that reproduces the full response — order-of-magnitude smaller than the original system, with no meaningful loss of fidelity.</p>
+      </div>
+      <div class="feat reveal">
+        <div class="tag">EXPLORE</div>
+        <h3><span class="emoji">🔭</span> Built for sweeps</h3>
+        <p>Once the reduced model is built, re-running new current scenarios is cheap — ideal for evaluating many power profiles, decap placements, or floorplans, or for a scriptable, closed-loop sign-off flow.</p>
+      </div>
+      <div class="feat wide reveal">
+        <div>
+          <div class="tag">PARALLEL · DOMAIN DECOMPOSITION</div>
+          <h3><span class="emoji">🧩</span> Scale out across CPU cores and GPUs</h3>
+          <p>For grids beyond what a single solve should carry, Raptor's <b style="color:var(--text)">domain decomposition method</b> partitions the power grid into balanced subdomains, solves each one independently — in parallel across multi-core CPUs and GPUs — and stitches the solution back together at the shared boundary nodes. The full-grid answer, computed a piece at a time, all at once.</p>
+          <div class="dd-chips">
+            <span class="chip">automatic grid partitioning</span>
+            <span class="chip">independent subdomain solves</span>
+            <span class="chip">multi-core CPU</span>
+            <span class="chip">GPU-ready</span>
+          </div>
+        </div>
+        <div class="dd-viz">
+          <svg viewBox="0 0 440 250" role="img" aria-label="Power grid partitioned into four subdomains, each solved on its own CPU core or GPU">
+            <defs>
+              <linearGradient id="ddie" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#13203b"/><stop offset="100%" stop-color="#0c1426"/>
+              </linearGradient>
+            </defs>
+            <!-- chip outline -->
+            <rect x="14" y="14" width="252" height="222" rx="10" fill="url(#ddie)" stroke="rgba(148,163,184,.25)"/>
+            <!-- subdomains -->
+            <g font-family="ui-monospace,monospace" font-size="10.5">
+              <rect x="26" y="26" width="112" height="94" rx="7" fill="rgba(139,92,246,.14)" stroke="#8b5cf6" stroke-opacity=".65"/>
+              <text x="36" y="44" fill="#c4b5fd">D1</text>
+              <rect x="142" y="26" width="112" height="94" rx="7" fill="rgba(34,211,238,.12)" stroke="#22d3ee" stroke-opacity=".65"/>
+              <text x="152" y="44" fill="#67e8f9">D2</text>
+              <rect x="26" y="124" width="112" height="98" rx="7" fill="rgba(96,165,250,.12)" stroke="#60a5fa" stroke-opacity=".65"/>
+              <text x="36" y="142" fill="#93c5fd">D3</text>
+              <rect x="142" y="124" width="112" height="98" rx="7" fill="rgba(52,211,153,.12)" stroke="#34d399" stroke-opacity=".65"/>
+              <text x="152" y="142" fill="#6ee7b7">D4</text>
+            </g>
+            <!-- interface nodes -->
+            <g fill="#e9eef8">
+              <circle cx="140" cy="52" r="2.6"/><circle cx="140" cy="86" r="2.6"/>
+              <circle cx="140" cy="150" r="2.6"/><circle cx="140" cy="190" r="2.6"/>
+              <circle cx="66" cy="122" r="2.6"/><circle cx="106" cy="122" r="2.6"/>
+              <circle cx="176" cy="122" r="2.6"/><circle cx="220" cy="122" r="2.6"/>
+            </g>
+            <text x="140" y="245" font-family="ui-monospace,monospace" font-size="9.5" fill="#6f829f" text-anchor="middle">shared boundary nodes stitch the domains</text>
+            <!-- arrows to workers -->
+            <g stroke="rgba(148,163,184,.5)" stroke-width="1.4" fill="none">
+              <path d="M268,58 L306,42"/><path d="M268,100 L306,98"/>
+              <path d="M268,150 L306,154"/><path d="M268,192 L306,210"/>
+            </g>
+            <!-- workers -->
+            <g font-family="ui-monospace,monospace" font-size="10">
+              <rect x="310" y="28" width="116" height="30" rx="7" fill="rgba(139,92,246,.12)" stroke="#8b5cf6" stroke-opacity=".55"/>
+              <text x="322" y="47" fill="#c4b5fd">core 0 · solve D1</text>
+              <rect x="310" y="84" width="116" height="30" rx="7" fill="rgba(34,211,238,.10)" stroke="#22d3ee" stroke-opacity=".55"/>
+              <text x="322" y="103" fill="#67e8f9">core 1 · solve D2</text>
+              <rect x="310" y="140" width="116" height="30" rx="7" fill="rgba(96,165,250,.10)" stroke="#60a5fa" stroke-opacity=".55"/>
+              <text x="322" y="159" fill="#93c5fd">core 2 · solve D3</text>
+              <rect x="310" y="196" width="116" height="30" rx="7" fill="rgba(52,211,153,.10)" stroke="#34d399" stroke-opacity=".55"/>
+              <text x="322" y="215" fill="#6ee7b7">GPU · solve D4</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AGENTIC FLOW ============ -->
+<section id="agentic">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Workflow · Raptor integration</div>
+      <h2>Built for agentic EDA flows</h2>
+      <p>Raptor is designed to plug directly into agentic EDA workflows. A first-class CLI and structured data interface let autonomous design agents invoke fast transient power-grid analysis, consume machine-readable waveforms and IR-drop margins, and feed those results back into floorplanning, power delivery, and decap-budgeting loops.</p>
+    </div>
+    <div class="tech-grid">
+      <div class="reveal">
+        <ul class="flowpts">
+          <li><b>Fully agentic-flow aware</b> — built to be driven by autonomous EDA agents, and to plug into <i>any</i> agentic flow.</li>
+          <li><b>First-class CLI</b> — every analysis is scriptable from the command line; nothing in the loop needs a GUI.</li>
+          <li><b>Structured data interface</b> — machine-readable netlists, node waveforms, worst-case IR-drop, and timing margins for closed-loop automation.</li>
+          <li><b>IR-drop-aware design iteration</b> — agents can sweep current profiles, decap placement, and floorplans, then use Raptor results to steer the next candidate.</li>
+        </ul>
+        <div class="chips" style="margin-top:24px">
+          <span class="chip">agentic-flow aware</span>
+          <span class="chip">CLI-first</span>
+          <span class="chip">structured data interface</span>
+          <span class="chip">transient waveforms</span>
+          <span class="chip">closed-loop sign-off</span>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="floloop">
+          <div class="floloop-head"><span class="loopdot"></span>Closed-loop automation</div>
+          <div class="flonode agent">
+            <div class="ft">◆ Agentic EDA flow</div>
+            <div class="fd">An autonomous agent drives floorplan, power-delivery, and decap decisions.</div>
+          </div>
+          <div class="floarrow"><span class="ax">↓</span> invokes Raptor — CLI + structured data interface</div>
+          <div class="flonode engine">
+            <div class="ft">▣ Raptor transient analysis</div>
+            <div class="fd">The advanced Krylov solver runs headless, producing node waveforms and dynamic IR-drop margins directly for automation.</div>
+          </div>
+          <div class="floarrow"><span class="ax">↓</span> returns structured, machine-readable results</div>
+          <div class="flonode agent">
+            <div class="ft">↻ Fed back to the agent</div>
+            <div class="fd">Worst-case droop, hot nets, and timing margins steer the next floorplan, decap, or power-budget iteration automatically.</div>
+          </div>
+        </div>
+        <p class="note">Transient IR-drop analysis becomes a callable step inside your agentic EDA flow, not a hand-run GUI task.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TECHNOLOGY ============ -->
+<section id="technology">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Under the hood</div>
+      <h2>Solve a tiny model, not the whole grid</h2>
+      <p>The speed comes from never re-solving the full mesh. Raptor builds a compact reduced-order model that captures the grid's dominant dynamics with an <b>advanced Krylov subspace reduction method</b>, marches <i>that</i> small model through time, and projects the answer back onto the nodes you asked for. It ships in two modes that span the speed–accuracy tradeoff: <b>Raptor</b>, the advanced rational-Krylov solver (fastest), and the standard <b>Krylov method</b> (most accurate).</p>
+    </div>
+    <div class="tech-grid">
+      <div class="pipe reveal">
+        <div class="pipe-step">
+          <span class="n">1</span>
+          <div><h4>Read the grid</h4><p>The power-grid netlist becomes its conductance and capacitance matrices plus the switching current sources — the same system a direct transient solver would march through step by step.</p></div>
+        </div>
+        <div class="pipe-step">
+          <span class="n">2</span>
+          <div><h4>Build the Krylov subspace</h4><p>An advanced Krylov subspace reduction method distills the grid's dominant response into a small basis. Raptor's rational variant places its expansion smartly so a tiny order-10 model captures the full dynamics.</p></div>
+        </div>
+        <div class="pipe-step">
+          <span class="n">3</span>
+          <div><h4>March the reduced model</h4><p>Transient integration runs on the small reduced model instead of the million-node grid — the same time steps, a fraction of the work per step. This is where the speedup comes from.</p></div>
+        </div>
+        <div class="pipe-step">
+          <span class="n">4</span>
+          <div><h4>Project back to nodes</h4><p>The reduced solution is projected back to the probe nodes, recovering full voltage waveforms and dynamic IR-drop that match the direct solver to machine-grade accuracy.</p></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="twocard reveal">
+          <div class="solver fast">
+            <div class="nm">Raptor <span class="paren">(advanced Krylov)</span></div>
+            <div class="role">fastest</div>
+            <p>Rational Krylov subspace: expansion points chosen for the transient window. The lowest-cost path to full waveforms, still essentially exact.</p>
+            <div class="kv"><span><b>up to 11.9×</b><br>speedup</span><span><b>&lt;6e-6</b><br>max norm. err</span></div>
+          </div>
+          <div class="solver acc">
+            <div class="nm">Krylov method</div>
+            <div class="role">most accurate</div>
+            <p>Standard Krylov subspace reduction: reproduces the direct solver to machine precision, at a moderate but still solid speedup.</p>
+            <div class="kv"><span><b>up to 4.8×</b><br>speedup</span><span><b>~1e-14</b><br>max norm. err</span></div>
+          </div>
+        </div>
+
+        <div class="eqbox reveal">
+          <div class="label">Why it's fast</div>
+          <p class="why">A direct transient solver re-solves a system with millions of unknowns at every one of thousands of time steps. Raptor instead builds a reduced model — an order-10 stand-in that behaves like the full grid over the transient window — and marches that tiny model through time. Replacing a million-node solve-per-step with a ten-variable one, then projecting back, is where the speedup comes from — with no meaningful loss of accuracy versus the direct solve.</p>
+          <div class="chips">
+            <span class="chip">advanced Krylov reduction</span>
+            <span class="chip">rational subspace</span>
+            <span class="chip">order-10 model</span>
+            <span class="chip">machine-grade accuracy</span>
+            <span class="chip">million-node grids</span>
+            <span class="chip">reusable across sweeps</span>
+            <span class="chip">domain decomposition</span>
+            <span class="chip">multi-core &amp; GPU scale-out</span>
+          </div>
+        </div>
+        <p class="note">A direct back-Euler transient solver ships alongside as the ground-truth reference, and every Raptor result is validated against it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section id="results">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Validation</div>
+      <h2>Measured against a direct solver</h2>
+      <p>Every number below is benchmarked against a direct back-Euler transient solve on the three IBM power-grid circuits — from 54K to 1.04M nodes — over 1,001 time points, with error measured on 20 golden probe nodes per circuit. Reduction order 10, rational-Krylov shift time 1.0 s.</p>
+    </div>
+
+    <!-- SPEED + ACCURACY TABLE -->
+    <div class="res-group">
+      <div class="res-label reveal">Runtime &amp; accuracy — Raptor advanced Krylov vs. direct</div>
+      <div class="res-grid">
+        <!-- speedup bars -->
+        <div class="panel reveal">
+          <div class="phead">
+            <div><h3>CPU-time speedup over direct solve</h3><div class="psub">Raptor (advanced Krylov) per circuit</div></div>
+            <span class="badge">up to 11.9×</span>
+          </div>
+          <div class="bars" id="speedbars">
+            <div class="bar-row"><span class="blab">ibmpg2t · 165K</span><div class="bar-track"><div class="bar-fill" data-w="100"></div></div><span class="bval">11.86×</span></div>
+            <div class="bar-row"><span class="blab">ibmpg3t · 1.04M</span><div class="bar-track"><div class="bar-fill" data-w="53"></div></div><span class="bval">6.25×</span></div>
+            <div class="bar-row"><span class="blab">ibmpg1t · 54K</span><div class="bar-track"><div class="bar-fill" data-w="47"></div></div><span class="bval">5.57×</span></div>
+          </div>
+          <div class="note">Direct back-Euler takes <b>2.3–204 s</b> per circuit; Raptor returns the same transient in <b>0.41–32.6 s</b> — an average <b>7.9×</b> speedup across the three grids.</div>
+        </div>
+
+        <!-- accuracy summary -->
+        <div class="panel reveal">
+          <div class="phead">
+            <div><h3>Accuracy vs. direct solve</h3><div class="psub">Normalized waveform error, 20 probe nodes/circuit</div></div>
+            <span class="badge warn">&lt;6e-6 max</span>
+          </div>
+          <table class="data">
+            <thead><tr><th>Circuit</th><th>Avg error</th><th>Max error</th></tr></thead>
+            <tbody>
+              <tr><td>ibmpg1t <span class="muted-tag">54K</span></td><td class="mono">7.08e-07</td><td class="mono">5.62e-06</td></tr>
+              <tr><td>ibmpg2t <span class="muted-tag">165K</span></td><td class="mono">3.30e-08</td><td class="mono">7.39e-08</td></tr>
+              <tr><td>ibmpg3t <span class="muted-tag">1.04M</span></td><td class="mono">1.43e-07</td><td class="mono">7.94e-07</td></tr>
+            </tbody>
+          </table>
+          <div class="note">Errors are normalized to the waveform scale. Even the worst probe node stays under <b style="color:#6ee7b7">6×10⁻⁶</b> — the reduced waveforms are visually indistinguishable from the direct solve.</div>
+        </div>
+
+        <!-- full comparison table -->
+        <div class="panel full reveal">
+          <div class="phead">
+            <div><h3>Full comparison — direct vs. Krylov vs. Raptor</h3><div class="psub">CPU time (s), speedup, and normalized error, per circuit</div></div>
+            <span class="badge">3 IBM grids</span>
+          </div>
+          <div class="tbl-scroll">
+          <table class="data">
+            <thead>
+              <tr>
+                <th>Circuit</th><th>Nodes</th><th>Sources</th>
+                <th>Direct CPU</th>
+                <th>Krylov CPU</th><th>Krylov ↑</th><th>Krylov max err</th>
+                <th>Raptor CPU</th><th>Raptor ↑</th><th>Raptor max err</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ibmpg1t</td><td class="mono">54,265</td><td class="mono">25,082</td>
+                <td class="mono">2.267</td>
+                <td class="mono">1.510</td><td class="mono">1.50×</td><td class="mono">6.66e-14</td>
+                <td class="mono">0.407</td><td class="mono">5.57×</td><td class="mono">5.62e-06</td>
+              </tr>
+              <tr>
+                <td>ibmpg2t</td><td class="mono">164,897</td><td class="mono">37,168</td>
+                <td class="mono">14.097</td>
+                <td class="mono">2.947</td><td class="mono">4.78×</td><td class="mono">1.71e-13</td>
+                <td class="mono">1.189</td><td class="mono">11.86×</td><td class="mono">7.39e-08</td>
+              </tr>
+              <tr>
+                <td>ibmpg3t</td><td class="mono">1,043,444</td><td class="mono">202,009</td>
+                <td class="mono">203.929</td>
+                <td class="mono">54.138</td><td class="mono">3.76×</td><td class="mono">1.74e-06</td>
+                <td class="mono">32.642</td><td class="mono">6.25×</td><td class="mono">7.94e-07</td>
+              </tr>
+              <tr class="win">
+                <td>Average</td><td class="mono">—</td><td class="mono">—</td>
+                <td class="mono">—</td>
+                <td class="mono">—</td><td class="mono">3.35×</td><td class="mono">—</td>
+                <td class="mono">—</td><td class="mono">7.89×</td><td class="mono">—</td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+          <div class="note">Reference: direct back-Euler transient. The standard Krylov method reaches machine precision (~10⁻¹⁴) at a moderate speedup; <b style="color:#6ee7b7">Raptor</b> — the advanced Krylov method — is roughly <b>2× faster still</b> while keeping the maximum normalized error under 6×10⁻⁶.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCURACY + SPEEDUP PLOTS -->
+    <div class="res-group">
+      <div class="res-label warm reveal">Accuracy &amp; speedup — at a glance</div>
+
+      <figure class="fig reveal">
+        <img src="assets/figs/accuracy_comparison.png" alt="Normalized waveform error of Raptor's advanced Krylov reduction vs. direct solve, across the three IBM power-grid circuits" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+        <div class="ph">assets/figs/accuracy_comparison.png — regenerate with gen_plots.py (see README)</div>
+        <figcaption><b>Accuracy — Raptor (advanced Krylov) vs. direct transient solve.</b> Average and maximum normalized waveform error, log scale, across ibmpg1t/2t/3t. Every bar sits at or below the 10⁻⁶ reference line except a single worst-case probe node at 5.6×10⁻⁶ — the reduced waveforms match the direct solve to essentially machine-grade accuracy.</figcaption>
+      </figure>
+
+      <figure class="fig reveal">
+        <img src="assets/figs/speedup_comparison.png" alt="Raptor CPU-time speedup over the direct back-Euler transient solve for the three IBM power-grid circuits" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+        <div class="ph">assets/figs/speedup_comparison.png — regenerate with gen_plots.py (see README)</div>
+        <figcaption><b>CPU-time speedup — Raptor vs. direct back-Euler.</b> Up to 11.86× faster on ibmpg2t, and 6.25× on the million-node ibmpg3t. Under each bar: the direct-solver time collapsing to the Raptor time.</figcaption>
+      </figure>
+    </div>
+
+    <!-- FULL-CHIP VIEWS -->
+    <div class="res-group">
+      <div class="res-label reveal">Full-chip visualization — structure, 2D drop &amp; 3D drop</div>
+      <p class="note" style="margin:0 0 6px">Raptor doesn't just solve the grid — it renders it. For each IBM benchmark, the metal structure, the rail-aware IR-drop / VSS-bounce map, and the same drop lifted into 3D are reconstructed from the full-node back-Euler snapshot at <span class="mono">t = 1.0×10⁻⁸ s</span>, straight from the SPICE geometry.</p>
+
+      <!-- ibmpg2t -->
+      <div class="design-row reveal">
+        <div class="drow-head">ibmpg2t <span class="dtag">· 127,565 nodes · 8 metal layers · 208,325 wire segments</span></div>
+        <div class="fig-3">
+          <figure class="fig">
+            <img src="assets/figs/views/ibmpg2t_structure_2d.png" alt="Raptor 2D power-grid geometry for ibmpg2t, colored by metal layer" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <div class="ph">assets/figs/views/ibmpg2t_structure_2d.png</div>
+            <figcaption><span class="step">Structure</span>The full metal mesh, colored by layer (0–7) across the die.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="assets/figs/views/ibmpg2t_drop_2d.png" alt="Raptor 2D rail-aware IR-drop / VSS-bounce map for ibmpg2t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <div class="ph">assets/figs/views/ibmpg2t_drop_2d.png</div>
+            <figcaption><span class="step">2D drop</span>Rail-aware IR drop / VSS bounce at every node, mapped in-plane.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="assets/figs/views/ibmpg2t_drop_3d.png" alt="Raptor 3D rail-aware IR-drop / VSS-bounce surface for ibmpg2t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <div class="ph">assets/figs/views/ibmpg2t_drop_3d.png</div>
+            <figcaption><span class="step">3D drop</span>The same drop as a 3D surface — hotspots stand up off the die.</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <!-- ibmpg3t -->
+      <div class="design-row reveal">
+        <div class="drow-head">ibmpg3t <span class="dtag">· 852,536 nodes · 15 metal layers · million-node scale</span></div>
+        <div class="fig-3">
+          <figure class="fig">
+            <img src="assets/figs/views/ibmpg3t_structure_2d.png" alt="Raptor 2D power-grid geometry for ibmpg3t, colored by metal layer" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <div class="ph">assets/figs/views/ibmpg3t_structure_2d.png</div>
+            <figcaption><span class="step">Structure</span>A denser, 15-layer mesh — the largest of the IBM grids.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="assets/figs/views/ibmpg3t_drop_2d.png" alt="Raptor 2D rail-aware IR-drop / VSS-bounce map for ibmpg3t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <div class="ph">assets/figs/views/ibmpg3t_drop_2d.png</div>
+            <figcaption><span class="step">2D drop</span>Full-node rail-aware IR drop across the whole million-node die.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="assets/figs/views/ibmpg3t_drop_3d.png" alt="Raptor 3D rail-aware IR-drop / VSS-bounce surface for ibmpg3t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <div class="ph">assets/figs/views/ibmpg3t_drop_3d.png</div>
+            <figcaption><span class="step">3D drop</span>852K nodes lifted into 3D — the worst-case peaks read at a glance.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA / CONTACT ============ -->
+<section id="contact">
+  <div class="wrap">
+    <div class="cta-band reveal">
+      <h2>Put IR-drop back in the loop.</h2>
+      <p>Raptor is in active development. Request access or a walkthrough on your own power-grid designs, and we'll get you set up.</p>
+      <div class="cta-btns">
+        <a class="btn btn-primary btn-lg" href="mailto:stan@ece.ucr.edu?subject=Raptor%20access%20request&amp;body=Hi%2C%20I'd%20like%20to%20request%20access%20to%20Raptor.%0A%0AOrganization%3A%0AUse%20case%20(transient%20IR-drop%2C%20grid%20scale)%3A%0AGrid%20size%20(nodes)%3A%0A">Request access</a>
+        <a class="btn btn-ghost btn-lg" href="mailto:stan@ece.ucr.edu?subject=Raptor%20demo%20request">Request a demo</a>
+      </div>
+      <div class="cta-meta">stan@ece.ucr.edu</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="#top"><span class="dot"></span>Raptor</a>
+        <p><b>Raptor</b> — Rapid Analysis of Power-grid Transients via Order Reduction. Fast, accurate transient power-grid simulation for million-node designs — powered by an advanced Krylov subspace reduction engine.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h5>Product</h5>
+          <a href="#features">Features</a>
+          <a href="#agentic">Agentic flow</a>
+          <a href="#technology">Technology</a>
+          <a href="#results">Results</a>
+        </div>
+        <div class="foot-col">
+          <h5>Capabilities</h5>
+          <span>Transient waveforms</span>
+          <span>Dynamic IR-drop analysis</span>
+          <span>Agentic EDA flow integration</span>
+          <span>Million-node power grids</span>
+          <span>Domain-decomposition parallel scaling</span>
+        </div>
+        <div class="foot-col">
+          <h5>Contact</h5>
+          <a href="mailto:stan@ece.ucr.edu">stan@ece.ucr.edu</a>
+          <a href="#contact">Request access</a>
+        </div>
+      </div>
+    </div>
+    <div class="cite">
+      <b>Raptor</b> (Rapid Analysis of Power-grid Transients via Order Reduction). Method: advanced Krylov subspace reduction for transient power-grid analysis, developed at University of California, Riverside.
+      Benchmarks: Raptor vs. direct back-Euler on the IBM power-grid circuits ibmpg1t/2t/3t (54K–1.04M nodes), reduction order 10 — up to 11.86× speedup at &lt;6×10⁻⁶ maximum normalized error.
+    </div>
+    <div class="copyright">© 2026 Raptor · Developed at UC Riverside. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  // mobile nav
+  var t=document.getElementById('navtoggle'), l=document.getElementById('navlinks');
+  t&&t.addEventListener('click',function(){l.classList.toggle('open')});
+  l&&l.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){l.classList.remove('open')})});
+
+  // scroll reveal
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.14});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
+
+  // animate every bar group when it scrolls into view
+  document.querySelectorAll('.bars').forEach(function(group){
+    var bo=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          group.querySelectorAll('.bar-fill').forEach(function(f){ f.style.transform='scaleX('+(f.dataset.w/100)+')'; });
+          bo.disconnect();
+        }
+      });
+    },{threshold:.35});
+    bo.observe(group);
+  });
+</script>
+</body>
+</html>
