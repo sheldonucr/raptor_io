@@ -120,7 +120,7 @@
 
   /* ---------- STATS STRIP ---------- */
   .stats{border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:rgba(10,16,32,.5)}
-  .stats-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:0}
+  .stats-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:0}
   .stat{padding:30px 22px; text-align:center; border-right:1px solid var(--border)}
   .stat:last-child{border-right:none}
   .stat .num{font-family:var(--mono); font-size:clamp(26px,3.4vw,38px); font-weight:700; letter-spacing:-.03em}
@@ -356,10 +356,10 @@
   <div class="wrap nav-inner">
     <a class="brand" href="#top"><span class="dot"></span>Raptor</a>
     <nav class="nav-links" id="navlinks">
+      <a href="#results">Results</a>
       <a href="#features">Features</a>
       <a href="#agentic">Agentic flow</a>
       <a href="#technology">Technology</a>
-      <a href="#results">Results</a>
       <a href="#contact">Contact</a>
     </nav>
     <div class="nav-cta">
@@ -482,10 +482,170 @@
   <div class="wrap stats-grid">
     <div class="stat reveal"><div class="num c1">11.9×</div><div class="lbl">faster than direct transient solve</div></div>
     <div class="stat reveal"><div class="num c2">&lt;6e-6</div><div class="lbl">max normalized error vs. direct</div></div>
-    <div class="stat reveal"><div class="num c3">1.04M</div><div class="lbl">nodes in largest validated grid</div></div>
-    <div class="stat reveal"><div class="num c4">3</div><div class="lbl">IBM power-grid benchmarks</div></div>
   </div>
 </div>
+
+<!-- ============ RESULTS ============ -->
+<section id="results">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Validation</div>
+      <h2>Measured against a direct solver</h2>
+      <p>Every number below is benchmarked against a direct back-Euler transient solve on the three IBM power-grid circuits — from 54K to 1.04M nodes — over 1,001 time points, with error measured on 20 golden probe nodes per circuit. Reduction order 10, rational-Krylov shift time 1.0 s.</p>
+    </div>
+
+    <!-- SPEED + ACCURACY TABLE -->
+    <div class="res-group">
+      <div class="res-label reveal">Runtime &amp; accuracy — Raptor advanced Krylov vs. direct</div>
+      <div class="res-grid">
+        <!-- speedup bars -->
+        <div class="panel reveal">
+          <div class="phead">
+            <div><h3>CPU-time speedup over direct solve</h3><div class="psub">Raptor (advanced Krylov) per circuit</div></div>
+            <span class="badge">up to 11.9×</span>
+          </div>
+          <div class="bars" id="speedbars">
+            <div class="bar-row"><span class="blab">ibmpg2t · 165K</span><div class="bar-track"><div class="bar-fill" data-w="100"></div></div><span class="bval">11.86×</span></div>
+            <div class="bar-row"><span class="blab">ibmpg3t · 1.04M</span><div class="bar-track"><div class="bar-fill" data-w="53"></div></div><span class="bval">6.25×</span></div>
+            <div class="bar-row"><span class="blab">ibmpg1t · 54K</span><div class="bar-track"><div class="bar-fill" data-w="47"></div></div><span class="bval">5.57×</span></div>
+          </div>
+          <div class="note">Direct back-Euler takes <b>2.3–204 s</b> per circuit; Raptor returns the same transient in <b>0.41–32.6 s</b> — an average <b>7.9×</b> speedup across the three grids.</div>
+        </div>
+
+        <!-- accuracy summary -->
+        <div class="panel reveal">
+          <div class="phead">
+            <div><h3>Accuracy vs. direct solve</h3><div class="psub">Normalized waveform error, 20 probe nodes/circuit</div></div>
+            <span class="badge warn">&lt;6e-6 max</span>
+          </div>
+          <table class="data">
+            <thead><tr><th>Circuit</th><th>Avg error</th><th>Max error</th></tr></thead>
+            <tbody>
+              <tr><td>ibmpg1t <span class="muted-tag">54K</span></td><td class="mono">7.08e-07</td><td class="mono">5.62e-06</td></tr>
+              <tr><td>ibmpg2t <span class="muted-tag">165K</span></td><td class="mono">3.30e-08</td><td class="mono">7.39e-08</td></tr>
+              <tr><td>ibmpg3t <span class="muted-tag">1.04M</span></td><td class="mono">1.43e-07</td><td class="mono">7.94e-07</td></tr>
+            </tbody>
+          </table>
+          <div class="note">Errors are normalized to the waveform scale. Even the worst probe node stays under <b style="color:#6ee7b7">6×10⁻⁶</b> — the reduced waveforms are visually indistinguishable from the direct solve.</div>
+        </div>
+
+        <!-- full comparison table -->
+        <div class="panel full reveal">
+          <div class="phead">
+            <div><h3>Full comparison — direct vs. Krylov vs. Raptor</h3><div class="psub">CPU time (s), speedup, and normalized error, per circuit</div></div>
+            <span class="badge">3 IBM grids</span>
+          </div>
+          <div class="tbl-scroll">
+          <table class="data">
+            <thead>
+              <tr>
+                <th>Circuit</th><th>Nodes</th><th>Sources</th>
+                <th>Direct CPU</th>
+                <th>Krylov CPU</th><th>Krylov ↑</th><th>Krylov max err</th>
+                <th>Raptor CPU</th><th>Raptor ↑</th><th>Raptor max err</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ibmpg1t</td><td class="mono">54,265</td><td class="mono">25,082</td>
+                <td class="mono">2.267</td>
+                <td class="mono">1.510</td><td class="mono">1.50×</td><td class="mono">6.66e-14</td>
+                <td class="mono">0.407</td><td class="mono">5.57×</td><td class="mono">5.62e-06</td>
+              </tr>
+              <tr>
+                <td>ibmpg2t</td><td class="mono">164,897</td><td class="mono">37,168</td>
+                <td class="mono">14.097</td>
+                <td class="mono">2.947</td><td class="mono">4.78×</td><td class="mono">1.71e-13</td>
+                <td class="mono">1.189</td><td class="mono">11.86×</td><td class="mono">7.39e-08</td>
+              </tr>
+              <tr>
+                <td>ibmpg3t</td><td class="mono">1,043,444</td><td class="mono">202,009</td>
+                <td class="mono">203.929</td>
+                <td class="mono">54.138</td><td class="mono">3.76×</td><td class="mono">1.74e-06</td>
+                <td class="mono">32.642</td><td class="mono">6.25×</td><td class="mono">7.94e-07</td>
+              </tr>
+              <tr class="win">
+                <td>Average</td><td class="mono">—</td><td class="mono">—</td>
+                <td class="mono">—</td>
+                <td class="mono">—</td><td class="mono">3.35×</td><td class="mono">—</td>
+                <td class="mono">—</td><td class="mono">7.89×</td><td class="mono">—</td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+          <div class="note">Reference: direct back-Euler transient. The standard Krylov method reaches machine precision (~10⁻¹⁴) at a moderate speedup; <b style="color:#6ee7b7">Raptor</b> — the advanced Krylov method — is roughly <b>2× faster still</b> while keeping the maximum normalized error under 6×10⁻⁶.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCURACY + SPEEDUP PLOTS -->
+    <div class="res-group">
+      <div class="res-label warm reveal">Accuracy &amp; speedup — at a glance</div>
+
+      <figure class="fig reveal">
+        <img src="assets/figs/accuracy_comparison.png" alt="Normalized waveform error of Raptor's advanced Krylov reduction vs. direct solve, across the three IBM power-grid circuits" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+        <div class="ph">assets/figs/accuracy_comparison.png — regenerate with gen_plots.py (see README)</div>
+        <figcaption><b>Accuracy — Raptor (advanced Krylov) vs. direct transient solve.</b> Average and maximum normalized waveform error, log scale, across ibmpg1t/2t/3t. Every bar sits at or below the 10⁻⁶ reference line except a single worst-case probe node at 5.6×10⁻⁶ — the reduced waveforms match the direct solve to essentially machine-grade accuracy.</figcaption>
+      </figure>
+
+      <figure class="fig reveal">
+        <img src="assets/figs/speedup_comparison.png" alt="Raptor CPU-time speedup over the direct back-Euler transient solve for the three IBM power-grid circuits" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+        <div class="ph">assets/figs/speedup_comparison.png — regenerate with gen_plots.py (see README)</div>
+        <figcaption><b>CPU-time speedup — Raptor vs. direct back-Euler.</b> Up to 11.86× faster on ibmpg2t, and 6.25× on the million-node ibmpg3t. Under each bar: the direct-solver time collapsing to the Raptor time.</figcaption>
+      </figure>
+    </div>
+
+    <!-- FULL-CHIP VIEWS -->
+    <div class="res-group">
+      <div class="res-label reveal">Full-chip visualization — structure, 2D drop &amp; 3D drop</div>
+      <p class="note" style="margin:0 0 6px">Raptor doesn't just solve the grid — it renders it. For each IBM benchmark, the metal structure, the rail-aware IR-drop / VSS-bounce map, and the same drop lifted into 3D are reconstructed from the full-node back-Euler snapshot at <span class="mono">t = 1.0×10⁻⁸ s</span>, straight from the SPICE geometry.</p>
+
+      <!-- ibmpg2t -->
+      <div class="design-row reveal">
+        <div class="drow-head">ibmpg2t <span class="dtag">· 127,565 nodes · 8 metal layers · 208,325 wire segments</span></div>
+        <div class="fig-3">
+          <figure class="fig">
+            <img src="assets/figs/views/ibmpg2t_structure_2d.png" alt="Raptor 2D power-grid geometry for ibmpg2t, colored by metal layer" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <div class="ph">assets/figs/views/ibmpg2t_structure_2d.png</div>
+            <figcaption><span class="step">Structure</span>The full metal mesh, colored by layer (0–7) across the die.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="assets/figs/views/ibmpg2t_drop_2d.png" alt="Raptor 2D rail-aware IR-drop / VSS-bounce map for ibmpg2t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <div class="ph">assets/figs/views/ibmpg2t_drop_2d.png</div>
+            <figcaption><span class="step">2D drop</span>Rail-aware IR drop / VSS bounce at every node, mapped in-plane.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="assets/figs/views/ibmpg2t_drop_3d.png" alt="Raptor 3D rail-aware IR-drop / VSS-bounce surface for ibmpg2t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <div class="ph">assets/figs/views/ibmpg2t_drop_3d.png</div>
+            <figcaption><span class="step">3D drop</span>The same drop as a 3D surface — hotspots stand up off the die.</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <!-- ibmpg3t -->
+      <div class="design-row reveal">
+        <div class="drow-head">ibmpg3t <span class="dtag">· 852,536 nodes · 15 metal layers · million-node scale</span></div>
+        <div class="fig-3">
+          <figure class="fig">
+            <img src="assets/figs/views/ibmpg3t_structure_2d.png" alt="Raptor 2D power-grid geometry for ibmpg3t, colored by metal layer" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <div class="ph">assets/figs/views/ibmpg3t_structure_2d.png</div>
+            <figcaption><span class="step">Structure</span>A denser, 15-layer mesh — the largest of the IBM grids.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="assets/figs/views/ibmpg3t_drop_2d.png" alt="Raptor 2D rail-aware IR-drop / VSS-bounce map for ibmpg3t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <div class="ph">assets/figs/views/ibmpg3t_drop_2d.png</div>
+            <figcaption><span class="step">2D drop</span>Full-node rail-aware IR drop across the whole million-node die.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="assets/figs/views/ibmpg3t_drop_3d.png" alt="Raptor 3D rail-aware IR-drop / VSS-bounce surface for ibmpg3t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <div class="ph">assets/figs/views/ibmpg3t_drop_3d.png</div>
+            <figcaption><span class="step">3D drop</span>852K nodes lifted into 3D — the worst-case peaks read at a glance.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- ============ PROBLEM ============ -->
 <section id="why">
@@ -747,168 +907,6 @@
           </div>
         </div>
         <p class="note">A direct back-Euler transient solver ships alongside as the ground-truth reference, and every Raptor result is validated against it.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ RESULTS ============ -->
-<section id="results">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="kicker">Validation</div>
-      <h2>Measured against a direct solver</h2>
-      <p>Every number below is benchmarked against a direct back-Euler transient solve on the three IBM power-grid circuits — from 54K to 1.04M nodes — over 1,001 time points, with error measured on 20 golden probe nodes per circuit. Reduction order 10, rational-Krylov shift time 1.0 s.</p>
-    </div>
-
-    <!-- SPEED + ACCURACY TABLE -->
-    <div class="res-group">
-      <div class="res-label reveal">Runtime &amp; accuracy — Raptor advanced Krylov vs. direct</div>
-      <div class="res-grid">
-        <!-- speedup bars -->
-        <div class="panel reveal">
-          <div class="phead">
-            <div><h3>CPU-time speedup over direct solve</h3><div class="psub">Raptor (advanced Krylov) per circuit</div></div>
-            <span class="badge">up to 11.9×</span>
-          </div>
-          <div class="bars" id="speedbars">
-            <div class="bar-row"><span class="blab">ibmpg2t · 165K</span><div class="bar-track"><div class="bar-fill" data-w="100"></div></div><span class="bval">11.86×</span></div>
-            <div class="bar-row"><span class="blab">ibmpg3t · 1.04M</span><div class="bar-track"><div class="bar-fill" data-w="53"></div></div><span class="bval">6.25×</span></div>
-            <div class="bar-row"><span class="blab">ibmpg1t · 54K</span><div class="bar-track"><div class="bar-fill" data-w="47"></div></div><span class="bval">5.57×</span></div>
-          </div>
-          <div class="note">Direct back-Euler takes <b>2.3–204 s</b> per circuit; Raptor returns the same transient in <b>0.41–32.6 s</b> — an average <b>7.9×</b> speedup across the three grids.</div>
-        </div>
-
-        <!-- accuracy summary -->
-        <div class="panel reveal">
-          <div class="phead">
-            <div><h3>Accuracy vs. direct solve</h3><div class="psub">Normalized waveform error, 20 probe nodes/circuit</div></div>
-            <span class="badge warn">&lt;6e-6 max</span>
-          </div>
-          <table class="data">
-            <thead><tr><th>Circuit</th><th>Avg error</th><th>Max error</th></tr></thead>
-            <tbody>
-              <tr><td>ibmpg1t <span class="muted-tag">54K</span></td><td class="mono">7.08e-07</td><td class="mono">5.62e-06</td></tr>
-              <tr><td>ibmpg2t <span class="muted-tag">165K</span></td><td class="mono">3.30e-08</td><td class="mono">7.39e-08</td></tr>
-              <tr><td>ibmpg3t <span class="muted-tag">1.04M</span></td><td class="mono">1.43e-07</td><td class="mono">7.94e-07</td></tr>
-            </tbody>
-          </table>
-          <div class="note">Errors are normalized to the waveform scale. Even the worst probe node stays under <b style="color:#6ee7b7">6×10⁻⁶</b> — the reduced waveforms are visually indistinguishable from the direct solve.</div>
-        </div>
-
-        <!-- full comparison table -->
-        <div class="panel full reveal">
-          <div class="phead">
-            <div><h3>Full comparison — direct vs. Krylov vs. Raptor</h3><div class="psub">CPU time (s), speedup, and normalized error, per circuit</div></div>
-            <span class="badge">3 IBM grids</span>
-          </div>
-          <div class="tbl-scroll">
-          <table class="data">
-            <thead>
-              <tr>
-                <th>Circuit</th><th>Nodes</th><th>Sources</th>
-                <th>Direct CPU</th>
-                <th>Krylov CPU</th><th>Krylov ↑</th><th>Krylov max err</th>
-                <th>Raptor CPU</th><th>Raptor ↑</th><th>Raptor max err</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>ibmpg1t</td><td class="mono">54,265</td><td class="mono">25,082</td>
-                <td class="mono">2.267</td>
-                <td class="mono">1.510</td><td class="mono">1.50×</td><td class="mono">6.66e-14</td>
-                <td class="mono">0.407</td><td class="mono">5.57×</td><td class="mono">5.62e-06</td>
-              </tr>
-              <tr>
-                <td>ibmpg2t</td><td class="mono">164,897</td><td class="mono">37,168</td>
-                <td class="mono">14.097</td>
-                <td class="mono">2.947</td><td class="mono">4.78×</td><td class="mono">1.71e-13</td>
-                <td class="mono">1.189</td><td class="mono">11.86×</td><td class="mono">7.39e-08</td>
-              </tr>
-              <tr>
-                <td>ibmpg3t</td><td class="mono">1,043,444</td><td class="mono">202,009</td>
-                <td class="mono">203.929</td>
-                <td class="mono">54.138</td><td class="mono">3.76×</td><td class="mono">1.74e-06</td>
-                <td class="mono">32.642</td><td class="mono">6.25×</td><td class="mono">7.94e-07</td>
-              </tr>
-              <tr class="win">
-                <td>Average</td><td class="mono">—</td><td class="mono">—</td>
-                <td class="mono">—</td>
-                <td class="mono">—</td><td class="mono">3.35×</td><td class="mono">—</td>
-                <td class="mono">—</td><td class="mono">7.89×</td><td class="mono">—</td>
-              </tr>
-            </tbody>
-          </table>
-          </div>
-          <div class="note">Reference: direct back-Euler transient. The standard Krylov method reaches machine precision (~10⁻¹⁴) at a moderate speedup; <b style="color:#6ee7b7">Raptor</b> — the advanced Krylov method — is roughly <b>2× faster still</b> while keeping the maximum normalized error under 6×10⁻⁶.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ACCURACY + SPEEDUP PLOTS -->
-    <div class="res-group">
-      <div class="res-label warm reveal">Accuracy &amp; speedup — at a glance</div>
-
-      <figure class="fig reveal">
-        <img src="assets/figs/accuracy_comparison.png" alt="Normalized waveform error of Raptor's advanced Krylov reduction vs. direct solve, across the three IBM power-grid circuits" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
-        <div class="ph">assets/figs/accuracy_comparison.png — regenerate with gen_plots.py (see README)</div>
-        <figcaption><b>Accuracy — Raptor (advanced Krylov) vs. direct transient solve.</b> Average and maximum normalized waveform error, log scale, across ibmpg1t/2t/3t. Every bar sits at or below the 10⁻⁶ reference line except a single worst-case probe node at 5.6×10⁻⁶ — the reduced waveforms match the direct solve to essentially machine-grade accuracy.</figcaption>
-      </figure>
-
-      <figure class="fig reveal">
-        <img src="assets/figs/speedup_comparison.png" alt="Raptor CPU-time speedup over the direct back-Euler transient solve for the three IBM power-grid circuits" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
-        <div class="ph">assets/figs/speedup_comparison.png — regenerate with gen_plots.py (see README)</div>
-        <figcaption><b>CPU-time speedup — Raptor vs. direct back-Euler.</b> Up to 11.86× faster on ibmpg2t, and 6.25× on the million-node ibmpg3t. Under each bar: the direct-solver time collapsing to the Raptor time.</figcaption>
-      </figure>
-    </div>
-
-    <!-- FULL-CHIP VIEWS -->
-    <div class="res-group">
-      <div class="res-label reveal">Full-chip visualization — structure, 2D drop &amp; 3D drop</div>
-      <p class="note" style="margin:0 0 6px">Raptor doesn't just solve the grid — it renders it. For each IBM benchmark, the metal structure, the rail-aware IR-drop / VSS-bounce map, and the same drop lifted into 3D are reconstructed from the full-node back-Euler snapshot at <span class="mono">t = 1.0×10⁻⁸ s</span>, straight from the SPICE geometry.</p>
-
-      <!-- ibmpg2t -->
-      <div class="design-row reveal">
-        <div class="drow-head">ibmpg2t <span class="dtag">· 127,565 nodes · 8 metal layers · 208,325 wire segments</span></div>
-        <div class="fig-3">
-          <figure class="fig">
-            <img src="assets/figs/views/ibmpg2t_structure_2d.png" alt="Raptor 2D power-grid geometry for ibmpg2t, colored by metal layer" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
-            <div class="ph">assets/figs/views/ibmpg2t_structure_2d.png</div>
-            <figcaption><span class="step">Structure</span>The full metal mesh, colored by layer (0–7) across the die.</figcaption>
-          </figure>
-          <figure class="fig">
-            <img src="assets/figs/views/ibmpg2t_drop_2d.png" alt="Raptor 2D rail-aware IR-drop / VSS-bounce map for ibmpg2t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
-            <div class="ph">assets/figs/views/ibmpg2t_drop_2d.png</div>
-            <figcaption><span class="step">2D drop</span>Rail-aware IR drop / VSS bounce at every node, mapped in-plane.</figcaption>
-          </figure>
-          <figure class="fig">
-            <img src="assets/figs/views/ibmpg2t_drop_3d.png" alt="Raptor 3D rail-aware IR-drop / VSS-bounce surface for ibmpg2t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
-            <div class="ph">assets/figs/views/ibmpg2t_drop_3d.png</div>
-            <figcaption><span class="step">3D drop</span>The same drop as a 3D surface — hotspots stand up off the die.</figcaption>
-          </figure>
-        </div>
-      </div>
-
-      <!-- ibmpg3t -->
-      <div class="design-row reveal">
-        <div class="drow-head">ibmpg3t <span class="dtag">· 852,536 nodes · 15 metal layers · million-node scale</span></div>
-        <div class="fig-3">
-          <figure class="fig">
-            <img src="assets/figs/views/ibmpg3t_structure_2d.png" alt="Raptor 2D power-grid geometry for ibmpg3t, colored by metal layer" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
-            <div class="ph">assets/figs/views/ibmpg3t_structure_2d.png</div>
-            <figcaption><span class="step">Structure</span>A denser, 15-layer mesh — the largest of the IBM grids.</figcaption>
-          </figure>
-          <figure class="fig">
-            <img src="assets/figs/views/ibmpg3t_drop_2d.png" alt="Raptor 2D rail-aware IR-drop / VSS-bounce map for ibmpg3t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
-            <div class="ph">assets/figs/views/ibmpg3t_drop_2d.png</div>
-            <figcaption><span class="step">2D drop</span>Full-node rail-aware IR drop across the whole million-node die.</figcaption>
-          </figure>
-          <figure class="fig">
-            <img src="assets/figs/views/ibmpg3t_drop_3d.png" alt="Raptor 3D rail-aware IR-drop / VSS-bounce surface for ibmpg3t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
-            <div class="ph">assets/figs/views/ibmpg3t_drop_3d.png</div>
-            <figcaption><span class="step">3D drop</span>852K nodes lifted into 3D — the worst-case peaks read at a glance.</figcaption>
-          </figure>
-        </div>
       </div>
     </div>
   </div>
