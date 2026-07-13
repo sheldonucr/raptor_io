@@ -4,6 +4,8 @@
 
 **Fast, accurate transient power-grid (IR-drop) simulation for million-node designs.**
 
+🔗 **Live page: [sheldonucr.github.io/raptor_io](https://sheldonucr.github.io/raptor_io/)**
+
 Raptor computes full transient power-grid waveforms — dynamic IR-drop at every probe node — at a
 fraction of the cost of a direct transient solver. It is powered by an **advanced Krylov subspace
 reduction** engine: instead of re-solving a million-node mesh at every time step, Raptor builds a
@@ -11,7 +13,8 @@ compact reduced-order model that captures the grid's dominant dynamics, marches 
 through time, and projects the result back onto the nodes you care about — validated throughout
 against a direct back-Euler transient reference.
 
-This repository hosts the **Raptor** promotion site (`index.html`).
+This repository hosts the **Raptor** promotion site (`index.html`), published at
+**<https://sheldonucr.github.io/raptor_io/>**.
 
 > **Naming.** The engine ships in two solver modes: **Raptor** — the advanced *rational* Krylov
 > subspace solver (fastest, internally RA-IEKS) — and the standard **Krylov method** (most accurate,
@@ -44,7 +47,7 @@ so simulation scales out with the hardware you have.
 
 Benchmarked against a **direct back-Euler transient** solve on the three IBM power-grid circuits,
 reduction order 10, rational-Krylov shift time 1.0 s, error measured on 20 golden probe nodes/circuit
-over 1,001 time points. Source: [`ibm_ieks_raieks_shift1_results.md`](../pgsim_krylov/ibm_pg_runs/ibm_ieks_raieks_shift1_results.md).
+over 1,001 time points.
 
 | Circuit  | Nodes     | Sources | Direct CPU (s) | Raptor CPU (s) | Raptor speedup | Raptor avg / max norm. err |
 |----------|-----------|---------|---------------:|----------------:|----------------:|-----------------------------|
