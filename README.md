@@ -93,4 +93,4 @@ python3 -m http.server 8000
 
 ---
 
-© 2026 Raptor · Developed at UC Riverside.
+© 2026 NoveetyAI, Inc. All rights reserved.
