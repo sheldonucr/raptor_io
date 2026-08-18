@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Raptor — Rapid Full-Chip Power Integrity Analysis and Visualization</title>
-<meta name="description" content="Raptor delivers rapid full-chip power integrity analysis and visualization — full transient power-grid (IR-drop) simulation for million-node designs, up to 11.9× faster than a direct solver with essentially exact waveforms. Powered by an advanced Krylov subspace reduction engine." />
-<meta property="og:title" content="Raptor — Rapid Full-Chip Power Integrity Analysis and Visualization" />
+<title>GridStack — Rapid Full-Chip Power Integrity Analysis and Visualization</title>
+<meta name="description" content="GridStack delivers rapid full-chip power integrity analysis and visualization — full transient power-grid (IR-drop) simulation for million-node designs, up to 11.9× faster than a direct solver with essentially exact waveforms. Powered by an advanced Krylov subspace reduction engine." />
+<meta property="og:title" content="GridStack — Rapid Full-Chip Power Integrity Analysis and Visualization" />
 <meta property="og:description" content="Rapid full-chip power integrity analysis and visualization: million-node transient power-grid simulation, up to 11.9× faster than a direct solver at machine-grade accuracy, powered by advanced Krylov subspace reduction." />
 <meta property="og:type" content="website" />
 <style>
@@ -354,7 +354,7 @@
 <!-- ============ NAV ============ -->
 <header class="nav">
   <div class="wrap nav-inner">
-    <a class="brand" href="#top"><span class="dot"></span>Raptor</a>
+    <a class="brand" href="#top"><span class="dot"></span>GridStack</a>
     <nav class="nav-links" id="navlinks">
       <a href="#results">Results</a>
       <a href="#features">Features</a>
@@ -363,7 +363,7 @@
       <a href="#contact">Contact</a>
     </nav>
     <div class="nav-cta">
-      <a class="btn btn-primary" href="#contact">Request access</a>
+      <a class="btn btn-primary" href="#contact">Request for demo</a>
       <button class="nav-toggle" id="navtoggle" aria-label="Menu">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
@@ -379,9 +379,9 @@
     <div>
       <span class="eyebrow"><span class="pulse"></span>Full-chip power integrity</span>
       <h1>Rapid Full-Chip <span class="grad-text">Power Integrity</span> Analysis and Visualization</h1>
-      <p class="lead"><b style="color:var(--text)">Raptor</b> — <b style="color:var(--text)">R</b>apid <b style="color:var(--text)">A</b>nalysis of <b style="color:var(--text)">P</b>ower-grid <b style="color:var(--text)">T</b>ransients via <b style="color:var(--text)">O</b>rder <b style="color:var(--text)">R</b>eduction — runs full transient power-grid (P/G) simulation on million-node designs in a fraction of the time of a direct solver — with waveforms that match it to machine precision. Sweep power scenarios, close timing, and check dynamic IR-drop where a single full transient run used to be your whole budget.</p>
+      <p class="lead"><b style="color:var(--text)">GridStack</b> <span style="color:var(--muted-2)">(formerly Raptor)</span> runs full transient power-grid (P/G) simulation on million-node designs in a fraction of the time of a direct solver — with waveforms that match it to machine precision. Sweep power scenarios, close timing, and check dynamic IR-drop where a single full transient run used to be your whole budget.</p>
       <div class="hero-cta">
-        <a class="btn btn-primary btn-lg" href="#contact">Request access</a>
+        <a class="btn btn-primary btn-lg" href="#contact">Request for demo</a>
         <a class="btn btn-ghost btn-lg" href="#results">See the results</a>
       </div>
       <div class="hero-sub">
@@ -496,12 +496,12 @@
 
     <!-- SPEED + ACCURACY TABLE -->
     <div class="res-group">
-      <div class="res-label reveal">Runtime &amp; accuracy — Raptor advanced Krylov vs. direct</div>
+      <div class="res-label reveal">Runtime &amp; accuracy — GridStack advanced Krylov vs. direct</div>
       <div class="res-grid">
         <!-- speedup bars -->
         <div class="panel reveal">
           <div class="phead">
-            <div><h3>CPU-time speedup over direct solve</h3><div class="psub">Raptor (advanced Krylov) per circuit</div></div>
+            <div><h3>CPU-time speedup over direct solve</h3><div class="psub">GridStack (advanced Krylov) per circuit</div></div>
             <span class="badge">up to 11.9×</span>
           </div>
           <div class="bars" id="speedbars">
@@ -509,7 +509,7 @@
             <div class="bar-row"><span class="blab">ibmpg3t · 1.04M</span><div class="bar-track"><div class="bar-fill" data-w="53"></div></div><span class="bval">6.25×</span></div>
             <div class="bar-row"><span class="blab">ibmpg1t · 54K</span><div class="bar-track"><div class="bar-fill" data-w="47"></div></div><span class="bval">5.57×</span></div>
           </div>
-          <div class="note">Direct back-Euler takes <b>2.3–204 s</b> per circuit; Raptor returns the same transient in <b>0.41–32.6 s</b> — an average <b>7.9×</b> speedup across the three grids.</div>
+          <div class="note">Direct back-Euler takes <b>2.3–204 s</b> per circuit; GridStack returns the same transient in <b>0.41–32.6 s</b> — an average <b>7.9×</b> speedup across the three grids.</div>
         </div>
 
         <!-- accuracy summary -->
@@ -532,7 +532,7 @@
         <!-- full comparison table -->
         <div class="panel full reveal">
           <div class="phead">
-            <div><h3>Full comparison — direct vs. Krylov vs. Raptor</h3><div class="psub">CPU time (s), speedup, and normalized error, per circuit</div></div>
+            <div><h3>Full comparison — direct vs. Krylov vs. GridStack</h3><div class="psub">CPU time (s), speedup, and normalized error, per circuit</div></div>
             <span class="badge">3 IBM grids</span>
           </div>
           <div class="tbl-scroll">
@@ -542,7 +542,7 @@
                 <th>Circuit</th><th>Nodes</th><th>Sources</th>
                 <th>Direct CPU</th>
                 <th>Krylov CPU</th><th>Krylov ↑</th><th>Krylov max err</th>
-                <th>Raptor CPU</th><th>Raptor ↑</th><th>Raptor max err</th>
+                <th>GridStack CPU</th><th>GridStack ↑</th><th>GridStack max err</th>
               </tr>
             </thead>
             <tbody>
@@ -573,7 +573,7 @@
             </tbody>
           </table>
           </div>
-          <div class="note">Reference: direct back-Euler transient. The standard Krylov method reaches machine precision (~10⁻¹⁴) at a moderate speedup; <b style="color:#6ee7b7">Raptor</b> — the advanced Krylov method — is roughly <b>2× faster still</b> while keeping the maximum normalized error under 6×10⁻⁶.</div>
+          <div class="note">Reference: direct back-Euler transient. The standard Krylov method reaches machine precision (~10⁻¹⁴) at a moderate speedup; <b style="color:#6ee7b7">GridStack</b> — the advanced Krylov method — is roughly <b>2× faster still</b> while keeping the maximum normalized error under 6×10⁻⁶.</div>
         </div>
       </div>
     </div>
@@ -583,39 +583,39 @@
       <div class="res-label warm reveal">Accuracy &amp; speedup — at a glance</div>
 
       <figure class="fig reveal">
-        <img src="assets/figs/accuracy_comparison.png" alt="Normalized waveform error of Raptor's advanced Krylov reduction vs. direct solve, across the three IBM power-grid circuits" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+        <img src="assets/figs/accuracy_comparison.png" alt="Normalized waveform error of GridStack's advanced Krylov reduction vs. direct solve, across the three IBM power-grid circuits" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
         <div class="ph">assets/figs/accuracy_comparison.png — regenerate with gen_plots.py (see README)</div>
-        <figcaption><b>Accuracy — Raptor (advanced Krylov) vs. direct transient solve.</b> Average and maximum normalized waveform error, log scale, across ibmpg1t/2t/3t. Every bar sits at or below the 10⁻⁶ reference line except a single worst-case probe node at 5.6×10⁻⁶ — the reduced waveforms match the direct solve to essentially machine-grade accuracy.</figcaption>
+        <figcaption><b>Accuracy — GridStack (advanced Krylov) vs. direct transient solve.</b> Average and maximum normalized waveform error, log scale, across ibmpg1t/2t/3t. Every bar sits at or below the 10⁻⁶ reference line except a single worst-case probe node at 5.6×10⁻⁶ — the reduced waveforms match the direct solve to essentially machine-grade accuracy.</figcaption>
       </figure>
 
       <figure class="fig reveal">
-        <img src="assets/figs/speedup_comparison.png" alt="Raptor CPU-time speedup over the direct back-Euler transient solve for the three IBM power-grid circuits" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+        <img src="assets/figs/speedup_comparison.png" alt="GridStack CPU-time speedup over the direct back-Euler transient solve for the three IBM power-grid circuits" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
         <div class="ph">assets/figs/speedup_comparison.png — regenerate with gen_plots.py (see README)</div>
-        <figcaption><b>CPU-time speedup — Raptor vs. direct back-Euler.</b> Up to 11.86× faster on ibmpg2t, and 6.25× on the million-node ibmpg3t. Under each bar: the direct-solver time collapsing to the Raptor time.</figcaption>
+        <figcaption><b>CPU-time speedup — GridStack vs. direct back-Euler.</b> Up to 11.86× faster on ibmpg2t, and 6.25× on the million-node ibmpg3t. Under each bar: the direct-solver time collapsing to the GridStack time.</figcaption>
       </figure>
     </div>
 
     <!-- FULL-CHIP VIEWS -->
     <div class="res-group">
       <div class="res-label reveal">Full-chip visualization — structure, 2D drop &amp; 3D drop</div>
-      <p class="note" style="margin:0 0 6px">Raptor doesn't just solve the grid — it renders it. For each IBM benchmark, the metal structure, the rail-aware IR-drop / VSS-bounce map, and the same drop lifted into 3D are reconstructed from the full-node back-Euler snapshot at <span class="mono">t = 1.0×10⁻⁸ s</span>, straight from the SPICE geometry.</p>
+      <p class="note" style="margin:0 0 6px">GridStack doesn't just solve the grid — it renders it. For each IBM benchmark, the metal structure, the rail-aware IR-drop / VSS-bounce map, and the same drop lifted into 3D are reconstructed from the full-node back-Euler snapshot at <span class="mono">t = 1.0×10⁻⁸ s</span>, straight from the SPICE geometry.</p>
 
       <!-- ibmpg2t -->
       <div class="design-row reveal">
         <div class="drow-head">ibmpg2t <span class="dtag">· 127,565 nodes · 8 metal layers · 208,325 wire segments</span></div>
         <div class="fig-3">
           <figure class="fig">
-            <img src="assets/figs/views/ibmpg2t_structure_2d.png" alt="Raptor 2D power-grid geometry for ibmpg2t, colored by metal layer" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <img src="assets/figs/views/ibmpg2t_structure_2d.png" alt="GridStack 2D power-grid geometry for ibmpg2t, colored by metal layer" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
             <div class="ph">assets/figs/views/ibmpg2t_structure_2d.png</div>
             <figcaption><span class="step">Structure</span>The full metal mesh, colored by layer (0–7) across the die.</figcaption>
           </figure>
           <figure class="fig">
-            <img src="assets/figs/views/ibmpg2t_drop_2d.png" alt="Raptor 2D rail-aware IR-drop / VSS-bounce map for ibmpg2t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <img src="assets/figs/views/ibmpg2t_drop_2d.png" alt="GridStack 2D rail-aware IR-drop / VSS-bounce map for ibmpg2t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
             <div class="ph">assets/figs/views/ibmpg2t_drop_2d.png</div>
             <figcaption><span class="step">2D drop</span>Rail-aware IR drop / VSS bounce at every node, mapped in-plane.</figcaption>
           </figure>
           <figure class="fig">
-            <img src="assets/figs/views/ibmpg2t_drop_3d.png" alt="Raptor 3D rail-aware IR-drop / VSS-bounce surface for ibmpg2t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <img src="assets/figs/views/ibmpg2t_drop_3d.png" alt="GridStack 3D rail-aware IR-drop / VSS-bounce surface for ibmpg2t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
             <div class="ph">assets/figs/views/ibmpg2t_drop_3d.png</div>
             <figcaption><span class="step">3D drop</span>The same drop as a 3D surface — hotspots stand up off the die.</figcaption>
           </figure>
@@ -627,17 +627,17 @@
         <div class="drow-head">ibmpg3t <span class="dtag">· 852,536 nodes · 15 metal layers · million-node scale</span></div>
         <div class="fig-3">
           <figure class="fig">
-            <img src="assets/figs/views/ibmpg3t_structure_2d.png" alt="Raptor 2D power-grid geometry for ibmpg3t, colored by metal layer" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <img src="assets/figs/views/ibmpg3t_structure_2d.png" alt="GridStack 2D power-grid geometry for ibmpg3t, colored by metal layer" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
             <div class="ph">assets/figs/views/ibmpg3t_structure_2d.png</div>
             <figcaption><span class="step">Structure</span>A denser, 15-layer mesh — the largest of the IBM grids.</figcaption>
           </figure>
           <figure class="fig">
-            <img src="assets/figs/views/ibmpg3t_drop_2d.png" alt="Raptor 2D rail-aware IR-drop / VSS-bounce map for ibmpg3t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <img src="assets/figs/views/ibmpg3t_drop_2d.png" alt="GridStack 2D rail-aware IR-drop / VSS-bounce map for ibmpg3t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
             <div class="ph">assets/figs/views/ibmpg3t_drop_2d.png</div>
             <figcaption><span class="step">2D drop</span>Full-node rail-aware IR drop across the whole million-node die.</figcaption>
           </figure>
           <figure class="fig">
-            <img src="assets/figs/views/ibmpg3t_drop_3d.png" alt="Raptor 3D rail-aware IR-drop / VSS-bounce surface for ibmpg3t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
+            <img src="assets/figs/views/ibmpg3t_drop_3d.png" alt="GridStack 3D rail-aware IR-drop / VSS-bounce surface for ibmpg3t" loading="lazy" onerror="this.closest('.fig').classList.add('noimg')">
             <div class="ph">assets/figs/views/ibmpg3t_drop_3d.png</div>
             <figcaption><span class="step">3D drop</span>852K nodes lifted into 3D — the worst-case peaks read at a glance.</figcaption>
           </figure>
@@ -673,7 +673,7 @@
       </div>
     </div>
     <div class="toolflow reveal">
-      <div class="tf-head"><span class="loopdot"></span>The Raptor flow — netlist in, transient waveforms out</div>
+      <div class="tf-head"><span class="loopdot"></span>The GridStack flow — netlist in, transient waveforms out</div>
       <div class="tf-row">
         <div class="tf-stage">
           <div class="tf-label">Inputs</div>
@@ -683,8 +683,8 @@
         </div>
         <div class="tf-arrow">→</div>
         <div class="tf-stage engine">
-          <div class="tf-label">Raptor · pick the solver</div>
-          <div class="tf-algo fast"><b>Raptor · advanced Krylov</b><span>rational subspace — fastest</span></div>
+          <div class="tf-label">GridStack · pick the solver</div>
+          <div class="tf-algo fast"><b>GridStack · advanced Krylov</b><span>rational subspace — fastest</span></div>
           <div class="tf-algo acc"><b>Krylov method</b><span>standard subspace — most accurate</span></div>
         </div>
         <div class="tf-arrow">→</div>
@@ -704,7 +704,7 @@
     <div class="sec-head reveal">
       <div class="kicker">What it does</div>
       <h2>One engine, the full transient picture</h2>
-      <p>Raptor pairs an advanced Krylov subspace reduction solver with a direct back-Euler reference, delivering full transient power-grid waveforms on the very same netlist — fast enough to iterate, accurate enough to sign off. And when one machine isn't enough, a domain decomposition method scales the simulation out across CPU cores and GPUs.</p>
+      <p>GridStack pairs an advanced Krylov subspace reduction solver with a direct back-Euler reference, delivering full transient power-grid waveforms on the very same netlist — fast enough to iterate, accurate enough to sign off. And when one machine isn't enough, a domain decomposition method scales the simulation out across CPU cores and GPUs.</p>
     </div>
     <div class="features">
       <div class="feat reveal">
@@ -715,7 +715,7 @@
       <div class="feat reveal">
         <div class="tag">SPEED</div>
         <h3><span class="emoji">⚡</span> Up to 11.9× faster</h3>
-        <p>Advanced Krylov reduction replaces the repeated full-grid solve with a tiny reduced model. Raptor returns the same transient in up to 11.9× less CPU time than a direct back-Euler solver — and the gap grows with grid size.</p>
+        <p>Advanced Krylov reduction replaces the repeated full-grid solve with a tiny reduced model. GridStack returns the same transient in up to 11.9× less CPU time than a direct back-Euler solver — and the gap grows with grid size.</p>
       </div>
       <div class="feat reveal">
         <div class="tag">ACCURACY</div>
@@ -741,7 +741,7 @@
         <div>
           <div class="tag">PARALLEL · DOMAIN DECOMPOSITION</div>
           <h3><span class="emoji">🧩</span> Scale out across CPU cores and GPUs</h3>
-          <p>For grids beyond what a single solve should carry, Raptor's <b style="color:var(--text)">domain decomposition method</b> partitions the power grid into balanced subdomains, solves each one independently — in parallel across multi-core CPUs and GPUs — and stitches the solution back together at the shared boundary nodes. The full-grid answer, computed a piece at a time, all at once.</p>
+          <p>For grids beyond what a single solve should carry, GridStack's <b style="color:var(--text)">domain decomposition method</b> partitions the power grid into balanced subdomains, solves each one independently — in parallel across multi-core CPUs and GPUs — and stitches the solution back together at the shared boundary nodes. The full-grid answer, computed a piece at a time, all at once.</p>
           <div class="dd-chips">
             <span class="chip">automatic grid partitioning</span>
             <span class="chip">independent subdomain solves</span>
@@ -804,9 +804,9 @@
 <section id="agentic">
   <div class="wrap">
     <div class="sec-head reveal">
-      <div class="kicker">Workflow · Raptor integration</div>
+      <div class="kicker">Workflow · GridStack integration</div>
       <h2>Built for agentic EDA flows</h2>
-      <p>Raptor is designed to plug directly into agentic EDA workflows. A first-class CLI and structured data interface let autonomous design agents invoke fast transient power-grid analysis, consume machine-readable waveforms and IR-drop margins, and feed those results back into floorplanning, power delivery, and decap-budgeting loops.</p>
+      <p>GridStack is designed to plug directly into agentic EDA workflows. A first-class CLI and structured data interface let autonomous design agents invoke fast transient power-grid analysis, consume machine-readable waveforms and IR-drop margins, and feed those results back into floorplanning, power delivery, and decap-budgeting loops.</p>
     </div>
     <div class="tech-grid">
       <div class="reveal">
@@ -814,7 +814,7 @@
           <li><b>Fully agentic-flow aware</b> — built to be driven by autonomous EDA agents, and to plug into <i>any</i> agentic flow.</li>
           <li><b>First-class CLI</b> — every analysis is scriptable from the command line; nothing in the loop needs a GUI.</li>
           <li><b>Structured data interface</b> — machine-readable netlists, node waveforms, worst-case IR-drop, and timing margins for closed-loop automation.</li>
-          <li><b>IR-drop-aware design iteration</b> — agents can sweep current profiles, decap placement, and floorplans, then use Raptor results to steer the next candidate.</li>
+          <li><b>IR-drop-aware design iteration</b> — agents can sweep current profiles, decap placement, and floorplans, then use GridStack results to steer the next candidate.</li>
         </ul>
         <div class="chips" style="margin-top:24px">
           <span class="chip">agentic-flow aware</span>
@@ -831,9 +831,9 @@
             <div class="ft">◆ Agentic EDA flow</div>
             <div class="fd">An autonomous agent drives floorplan, power-delivery, and decap decisions.</div>
           </div>
-          <div class="floarrow"><span class="ax">↓</span> invokes Raptor — CLI + structured data interface</div>
+          <div class="floarrow"><span class="ax">↓</span> invokes GridStack — CLI + structured data interface</div>
           <div class="flonode engine">
-            <div class="ft">▣ Raptor transient analysis</div>
+            <div class="ft">▣ GridStack transient analysis</div>
             <div class="fd">The advanced Krylov solver runs headless, producing node waveforms and dynamic IR-drop margins directly for automation.</div>
           </div>
           <div class="floarrow"><span class="ax">↓</span> returns structured, machine-readable results</div>
@@ -854,7 +854,7 @@
     <div class="sec-head reveal">
       <div class="kicker">Under the hood</div>
       <h2>Solve a tiny model, not the whole grid</h2>
-      <p>The speed comes from never re-solving the full mesh. Raptor builds a compact reduced-order model that captures the grid's dominant dynamics with an <b>advanced Krylov subspace reduction method</b>, marches <i>that</i> small model through time, and projects the answer back onto the nodes you asked for. It ships in two modes that span the speed–accuracy tradeoff: <b>Raptor</b>, the advanced rational-Krylov solver (fastest), and the standard <b>Krylov method</b> (most accurate).</p>
+      <p>The speed comes from never re-solving the full mesh. GridStack builds a compact reduced-order model that captures the grid's dominant dynamics with an <b>advanced Krylov subspace reduction method</b>, marches <i>that</i> small model through time, and projects the answer back onto the nodes you asked for. It ships in two modes that span the speed–accuracy tradeoff: <b>GridStack</b>, the advanced rational-Krylov solver (fastest), and the standard <b>Krylov method</b> (most accurate).</p>
     </div>
     <div class="tech-grid">
       <div class="pipe reveal">
@@ -864,7 +864,7 @@
         </div>
         <div class="pipe-step">
           <span class="n">2</span>
-          <div><h4>Build the Krylov subspace</h4><p>An advanced Krylov subspace reduction method distills the grid's dominant response into a small basis. Raptor's rational variant places its expansion smartly so a tiny order-10 model captures the full dynamics.</p></div>
+          <div><h4>Build the Krylov subspace</h4><p>An advanced Krylov subspace reduction method distills the grid's dominant response into a small basis. GridStack's rational variant places its expansion smartly so a tiny order-10 model captures the full dynamics.</p></div>
         </div>
         <div class="pipe-step">
           <span class="n">3</span>
@@ -879,7 +879,7 @@
       <div>
         <div class="twocard reveal">
           <div class="solver fast">
-            <div class="nm">Raptor <span class="paren">(advanced Krylov)</span></div>
+            <div class="nm">GridStack <span class="paren">(advanced Krylov)</span></div>
             <div class="role">fastest</div>
             <p>Rational Krylov subspace: expansion points chosen for the transient window. The lowest-cost path to full waveforms, still essentially exact.</p>
             <div class="kv"><span><b>up to 11.9×</b><br>speedup</span><span><b>&lt;6e-6</b><br>max norm. err</span></div>
@@ -894,7 +894,7 @@
 
         <div class="eqbox reveal">
           <div class="label">Why it's fast</div>
-          <p class="why">A direct transient solver re-solves a system with millions of unknowns at every one of thousands of time steps. Raptor instead builds a reduced model — an order-10 stand-in that behaves like the full grid over the transient window — and marches that tiny model through time. Replacing a million-node solve-per-step with a ten-variable one, then projecting back, is where the speedup comes from — with no meaningful loss of accuracy versus the direct solve.</p>
+          <p class="why">A direct transient solver re-solves a system with millions of unknowns at every one of thousands of time steps. GridStack instead builds a reduced model — an order-10 stand-in that behaves like the full grid over the transient window — and marches that tiny model through time. Replacing a million-node solve-per-step with a ten-variable one, then projecting back, is where the speedup comes from — with no meaningful loss of accuracy versus the direct solve.</p>
           <div class="chips">
             <span class="chip">advanced Krylov reduction</span>
             <span class="chip">rational subspace</span>
@@ -906,7 +906,7 @@
             <span class="chip">multi-core &amp; GPU scale-out</span>
           </div>
         </div>
-        <p class="note">A direct back-Euler transient solver ships alongside as the ground-truth reference, and every Raptor result is validated against it.</p>
+        <p class="note">A direct back-Euler transient solver ships alongside as the ground-truth reference, and every GridStack result is validated against it.</p>
       </div>
     </div>
   </div>
@@ -917,10 +917,10 @@
   <div class="wrap">
     <div class="cta-band reveal">
       <h2>Put IR-drop back in the loop.</h2>
-      <p>Raptor is in active development. Request access or a walkthrough on your own power-grid designs, and we'll get you set up.</p>
+      <p>GridStack is in active development. Request a demo or a walkthrough on your own power-grid designs, and we'll get you set up.</p>
       <div class="cta-btns">
-        <a class="btn btn-primary btn-lg" href="mailto:noveetyai@noveetymanagement.com?subject=Raptor%20access%20request&amp;body=Hi%2C%20I'd%20like%20to%20request%20access%20to%20Raptor.%0A%0AOrganization%3A%0AUse%20case%20(transient%20IR-drop%2C%20grid%20scale)%3A%0AGrid%20size%20(nodes)%3A%0A">Request access</a>
-        <a class="btn btn-ghost btn-lg" href="mailto:noveetyai@noveetymanagement.com?subject=Raptor%20demo%20request">Request a demo</a>
+        <a class="btn btn-primary btn-lg" href="mailto:noveetyai@noveetymanagement.com?subject=GridStack%20demo%20request&amp;body=Hi%2C%20I'd%20like%20to%20request%20a%20demo%20of%20GridStack.%0A%0AOrganization%3A%0AUse%20case%20(transient%20IR-drop%2C%20grid%20scale)%3A%0AGrid%20size%20(nodes)%3A%0A">Request for demo</a>
+        <a class="btn btn-ghost btn-lg" href="#results">See the results</a>
       </div>
       <div class="cta-meta">noveetyai@noveetymanagement.com</div>
     </div>
@@ -932,8 +932,8 @@
   <div class="wrap">
     <div class="foot-grid">
       <div class="foot-brand">
-        <a class="brand" href="#top"><span class="dot"></span>Raptor</a>
-        <p><b>Raptor</b> — Rapid Analysis of Power-grid Transients via Order Reduction. Fast, accurate transient power-grid simulation for million-node designs — powered by an advanced Krylov subspace reduction engine.</p>
+        <a class="brand" href="#top"><span class="dot"></span>GridStack</a>
+        <p><b>GridStack</b> <span style="color:var(--muted-2)">(formerly Raptor — Rapid Analysis of Power-grid Transients via Order Reduction)</span>. Fast, accurate transient power-grid simulation for million-node designs — powered by an advanced Krylov subspace reduction engine.</p>
       </div>
       <div class="foot-cols">
         <div class="foot-col">
@@ -954,13 +954,13 @@
         <div class="foot-col">
           <h5>Contact</h5>
           <a href="mailto:noveetyai@noveetymanagement.com">noveetyai@noveetymanagement.com</a>
-          <a href="#contact">Request access</a>
+          <a href="#contact">Request for demo</a>
         </div>
       </div>
     </div>
     <div class="cite">
-      <b>Raptor</b> (Rapid Analysis of Power-grid Transients via Order Reduction). Method: advanced Krylov subspace reduction for transient power-grid analysis.
-      Benchmarks: Raptor vs. direct back-Euler on the IBM power-grid circuits ibmpg1t/2t/3t (54K–1.04M nodes), reduction order 10 — up to 11.86× speedup at &lt;6×10⁻⁶ maximum normalized error.
+      <b>GridStack</b> (formerly Raptor — Rapid Analysis of Power-grid Transients via Order Reduction). Method: advanced Krylov subspace reduction for transient power-grid analysis.
+      Benchmarks: GridStack vs. direct back-Euler on the IBM power-grid circuits ibmpg1t/2t/3t (54K–1.04M nodes), reduction order 10 — up to 11.86× speedup at &lt;6×10⁻⁶ maximum normalized error.
     </div>
     <div class="copyright">© 2026 NoveetyAI, Inc. All rights reserved.</div>
   </div>

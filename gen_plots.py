@@ -25,7 +25,7 @@ PANEL   = "#0e1628"
 TEXT    = "#e9eef8"
 MUTED   = "#9aabc6"
 GRID    = (148/255,163/255,184/255,0.16)
-EMERALD = "#34d399"   # RA-IEKS / advanced krylov (accuracy accent)
+EMERALD = "#34d399"   # GridStack advanced krylov (accuracy accent)
 CYAN    = "#22d3ee"
 VIOLET  = "#8b5cf6"
 BLUE    = "#60a5fa"
@@ -61,7 +61,7 @@ ax.text(2.42, 1.25e-6, "1e-6", color=VIOLET, fontsize=9, ha="right", va="bottom"
 ax.set_xticks(x)
 ax.set_xticklabels([f"{c}\n{n}" for c, n in zip(circuits, nodes)], fontsize=10.5)
 ax.set_ylabel("Normalized waveform error vs. direct solve", fontsize=11)
-ax.set_title("Raptor accuracy — advanced Krylov reduction vs. direct transient solve",
+ax.set_title("GridStack accuracy — advanced Krylov reduction vs. direct transient solve",
              color=TEXT, fontsize=12.5, pad=14, weight="bold")
 style(ax)
 leg = ax.legend(loc="upper right", frameon=False, fontsize=10.5)
@@ -88,7 +88,7 @@ ax.set_xticks(x)
 ax.set_xticklabels([f"{c}\n{n}" for c, n in zip(circuits, nodes)], fontsize=10.5)
 ax.set_ylabel("Speedup over direct transient solve (×)", fontsize=11)
 ax.set_ylim(0, 13.5)
-ax.set_title("Raptor CPU-time speedup — up to 11.9× faster than direct back-Euler",
+ax.set_title("GridStack CPU-time speedup — up to 11.9× faster than direct back-Euler",
              color=TEXT, fontsize=12.5, pad=14, weight="bold")
 style(ax)
 for r, s, bc, rc in zip(bars, raieks_speedup, be_cpu, raieks_cpu):
