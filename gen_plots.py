@@ -22,12 +22,12 @@ ieks_max   = [6.662e-14, 1.712e-13, 1.737e-06]
 # palette (aligned with noveety-ai.com light theme — deep teal + blue on off-white)
 BG      = "none"
 PANEL   = "#ffffff"
-TEXT    = "#0d1b2e"
-MUTED   = "#4f6280"
-GRID    = (13/255,27/255,46/255,0.10)
-TEAL    = "#0aa088"   # GridStack accent (primary)
-BLUE    = "#1668d8"   # secondary accent
-REF     = "#7b8ca6"   # neutral reference line
+TEXT    = "#172b32"
+MUTED   = "#52646b"
+GRID    = (23/255,43/255,50/255,0.12)
+TEAL    = "#087964"   # GridStack accent (primary)
+BLUE    = "#215fa4"   # secondary accent
+REF     = "#8a9a9f"   # neutral reference line
 # back-compat aliases
 EMERALD = TEAL
 CYAN    = BLUE
@@ -37,7 +37,7 @@ plt.rcParams.update({
     "font.family": "DejaVu Sans",
     "text.color": TEXT, "axes.labelcolor": TEXT,
     "xtick.color": MUTED, "ytick.color": MUTED,
-    "axes.edgecolor": (13/255,27/255,46/255,0.25),
+    "axes.edgecolor": (23/255,43/255,50/255,0.28),
 })
 
 def style(ax):

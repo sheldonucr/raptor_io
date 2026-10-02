@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "raptor-static-site",
+      "name": "gridstack-site",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8731"],
-      "port": 8731
+      "runtimeArgs": ["-m", "http.server", "8788", "--bind", "127.0.0.1"],
+      "port": 8788
     }
   ]
 }

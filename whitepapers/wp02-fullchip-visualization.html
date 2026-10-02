@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GS-WP-02 | Full-chip IR-drop visualization at million-node scale &mdash; GridStack white paper</title><meta name="description" content="GridStack white paper GS-WP-02: reconstructing die-level metal structure and rail-aware IR drop / VSS bounce from SPICE geometry, in plane and in 3D, for the IBM transient power-grid benchmarks."><meta property="og:title" content="GridStack GS-WP-02 | Full-chip IR-drop visualization"><meta property="og:description" content="Die-level structure, in-plane IR drop and 3D drop surfaces reconstructed from the power-grid netlist."><meta property="og:type" content="article"><link rel="icon" href="../assets/img/gridstack.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="../assets/css/gridstack.css"><script src="../assets/js/site.js" defer></script></head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap header-inner"><a class="brand" href="../index.html" aria-label="GridStack home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>GridStack</a><button class="menu-button" aria-expanded="false" aria-controls="navigation" aria-label="Toggle navigation" title="Menu"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button><nav class="nav" id="navigation" aria-label="Main navigation"><a href="../index.html">Overview</a><a href="../index.html#capabilities">Features &amp; capabilities</a><a href="../index.html#whitepapers" aria-current="page">White papers</a><a class="contact-link" href="#contact">Discuss your design</a></nav></div></header>
+<main id="main">
+<section class="page-intro"><div class="wrap paper-body"><p class="paper-meta"><span>GridStack white paper</span><span>GS-WP-02</span><span>Rev. 1.0</span><span>October 2026</span></p><h1>Full-chip IR-drop visualization at million-node scale</h1>
+<div class="paper-abstract"><strong>Abstract</strong>A transient power-grid solver that only returns numbers leaves the hardest question unanswered: <i>where</i> on the die is the problem. GridStack reconstructs the full die-level picture directly from the netlist &mdash; the metal mesh colored by layer, the rail-aware IR drop and VSS bounce at every node in plane, and the same field lifted into a 3D surface where hotspots stand up off the die. This paper describes the reconstruction method and presents the three views for an 8-layer, 127K-node grid and a 15-layer, 852K-node grid, taken from the full-node back-Euler snapshot at t&nbsp;=&nbsp;1.0&times;10<sup>&minus;8</sup>&nbsp;s.</div></div></section>
+<div class="wrap paper-body">
+
+<section class="feature-section" id="why"><p class="feature-number">1 / WHY FULL-CHIP VIEWS MATTER</p><h2>Worst-case droop is a number; fixing it is a map</h2><p class="intro-copy">A single worst-case figure tells a designer that a grid fails, not what to do about it.</p><p>Fixing dynamic IR-drop is a spatial problem. Whether the droop is one concentrated hotspot under a switching block or a broad sag across an under-strapped region determines whether the answer is decap, a wider strap, another via array or a floorplan change.</p>
+<p>GridStack therefore treats visualization as part of the analysis rather than a downstream report. Every full-node solve can be rendered at die level, so the structure of the grid and the structure of the drop can be read side by side.</p>
+</section>
+
+<section class="feature-section" id="method"><p class="feature-number">2 / RECONSTRUCTION METHOD</p><h2>Geometry and drop, both from the netlist</h2><p class="intro-copy">No external layout database is required: the geometry comes from the same file the solver reads.</p>
+<h3>Geometry from the netlist</h3>
+<p>The IBM benchmark netlists encode physical placement in their node names. GridStack parses the IBM-style coordinates out of the SPICE node names to recover each node's die position and metal layer, then rebuilds the wire segments between them.</p>
+<h3>The rail-aware drop metric</h3>
+<p>A power grid carries two distinct rail families, and a single &ldquo;voltage&rdquo; plot mixes them incoherently. GridStack separates them and plots the physically meaningful deviation on each:</p>
+<ul>
+<li><b>VDD-like nodes</b> &mdash; the drop is <span class="mono">VDD &minus; V</span>, how far the supply has sagged below its ideal value.</li>
+<li><b>VSS-like nodes</b> &mdash; the bounce is <span class="mono">V</span> itself, how far ground has lifted above zero.</li>
+</ul>
+<p>Both quantities are volts of margin lost, so they share one scale and one color map, and a single map can be read across the whole die regardless of which rail a node belongs to.</p>
+<div class="reading-note"><strong>The views are ground truth, not a reduced-model reconstruction.</strong> They are taken from the full-node back-Euler solution &mdash; every node in the grid, not only the probe nodes &mdash; at t&nbsp;=&nbsp;1.0&times;10<sup>&minus;8</sup>&nbsp;s, so the rendered field is the transient state the reference solver computed.</div>
+<div class="table-wrap"><table><thead><tr><th scope="col">Snapshot parameter</th><th scope="col">Value</th></tr></thead><tbody>
+<tr><th scope="row">Snapshot time</th><td class="mono">1.0e-8 s</td></tr>
+<tr><th scope="row">Solver</th><td class="mono">Direct back-Euler</td></tr>
+<tr><th scope="row">Coverage</th><td class="mono">Full-node</td></tr>
+<tr><th scope="row">Geometry source</th><td class="mono">SPICE node names</td></tr>
+</tbody></table></div>
+<p class="note">Coordinate recovery relies on the IBM benchmark naming convention. A grid that does not encode placement in its node names needs its geometry supplied separately; format coverage is confirmed during onboarding.</p>
+</section>
+
+<section class="feature-section" id="ibmpg2t"><p class="feature-number">3 / IBMPG2T</p><h2>8 metal layers, 127K nodes</h2><p class="intro-copy">The mid-size benchmark: 127,565 nodes across 8 metal layers, connected by 208,325 wire segments.</p><p>Dense enough to show real spatial structure, small enough that individual straps remain legible.</p>
+<div class="figure-trio">
+<figure class="figure"><button class="image-open" aria-label="Expand the ibmpg2t structure view"><img src="../assets/figs/views/ibmpg2t_structure_2d.png" alt="2D power-grid geometry for ibmpg2t, colored by metal layer" loading="lazy"></button><figcaption><span class="step">Figure 1a &middot; Structure</span>The full metal mesh, colored by layer (0&ndash;7) across the die.</figcaption></figure>
+<figure class="figure"><button class="image-open" aria-label="Expand the ibmpg2t 2D drop view"><img src="../assets/figs/views/ibmpg2t_drop_2d.png" alt="2D rail-aware IR-drop and VSS-bounce map for ibmpg2t" loading="lazy"></button><figcaption><span class="step">Figure 1b &middot; 2D drop</span>Rail-aware IR drop and VSS bounce at every node, mapped in plane.</figcaption></figure>
+<figure class="figure"><button class="image-open" aria-label="Expand the ibmpg2t 3D drop view"><img src="../assets/figs/views/ibmpg2t_drop_3d.png" alt="3D rail-aware IR-drop and VSS-bounce surface for ibmpg2t" loading="lazy"></button><figcaption><span class="step">Figure 1c &middot; 3D drop</span>The same drop as a 3D surface &mdash; hotspots stand up off the die.</figcaption></figure>
+</div>
+</section>
+
+<section class="feature-section" id="ibmpg3t"><p class="feature-number">4 / IBMPG3T</p><h2>15 metal layers, 852K nodes</h2><p class="intro-copy">The largest of the IBM grids: 852,536 nodes across 15 metal layers, at million-node scale.</p><p>The same three views render without downsampling the node set.</p>
+<div class="figure-trio">
+<figure class="figure"><button class="image-open" aria-label="Expand the ibmpg3t structure view"><img src="../assets/figs/views/ibmpg3t_structure_2d.png" alt="2D power-grid geometry for ibmpg3t, colored by metal layer" loading="lazy"></button><figcaption><span class="step">Figure 2a &middot; Structure</span>A denser, 15-layer mesh &mdash; the largest of the IBM grids.</figcaption></figure>
+<figure class="figure"><button class="image-open" aria-label="Expand the ibmpg3t 2D drop view"><img src="../assets/figs/views/ibmpg3t_drop_2d.png" alt="2D rail-aware IR-drop and VSS-bounce map for ibmpg3t" loading="lazy"></button><figcaption><span class="step">Figure 2b &middot; 2D drop</span>Full-node rail-aware IR drop across the whole million-node die.</figcaption></figure>
+<figure class="figure"><button class="image-open" aria-label="Expand the ibmpg3t 3D drop view"><img src="../assets/figs/views/ibmpg3t_drop_3d.png" alt="3D rail-aware IR-drop and VSS-bounce surface for ibmpg3t" loading="lazy"></button><figcaption><span class="step">Figure 2c &middot; 3D drop</span>852K nodes lifted into 3D &mdash; the worst-case peaks read at a glance.</figcaption></figure>
+</div>
+</section>
+
+<section class="feature-section" id="reading"><p class="feature-number">5 / READING THE MAPS</p><h2>Three views, three different questions</h2><p class="intro-copy">The views are meant to be read in sequence.</p>
+<ul>
+<li><b>Structure</b> establishes what the grid <i>is</i> &mdash; strap pitch, layer stacking and the regions where the mesh thins out. Thin regions are where to look first in the next two views.</li>
+<li><b>2D drop</b> localizes the loss of margin. Because the map is rail-aware, a VDD sag and a VSS bounce in the same region read on one scale and sum to the true margin lost by a cell sitting there.</li>
+<li><b>3D drop</b> separates a sharp, local hotspot from a broad, shallow sag &mdash; a distinction that is easy to miss in a flat color map but determines whether the fix is local decap or a structural change to the grid.</li>
+</ul>
+<p>Because these views come from the full-node solution, they can be produced for any time point in the transient, not only the snapshot shown here &mdash; turning dynamic IR-drop into something that can be watched evolving across the die rather than summarized as a single worst-case number. The transient engine that produces those solutions is described in <a href="wp01-krylov-reduction.html">GS-WP-01</a>.</p>
+</section>
+
+<nav class="paper-nav" aria-label="White paper series"><span>&larr; Previous: <a href="wp01-krylov-reduction.html">GS-WP-01 &mdash; Advanced Krylov subspace reduction</a></span><span><a href="../index.html#whitepapers">All white papers</a> &rarr;</span></nav>
+</div>
+<section class="contact-band" id="contact"><div class="wrap contact-inner"><div><p class="eyebrow">From evidence to your design</p><h2>See your own grid, at die level.</h2><p>Bring a power-grid netlist and the time point you care about. We will discuss geometry recovery, the drop metric and the views that answer your question.</p></div><a class="button" href="mailto:noveetyai@noveetymanagement.com?subject=GridStack%20design%20discussion%20(GS-WP-02)">Request a walkthrough <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div></section>
+</main>
+<footer><div class="wrap footer-inner"><span>&copy; 2026 NoveetyAI, Inc. / GridStack &mdash; GS-WP-02, Rev. 1.0</span><span><a href="../index.html">Product overview</a> &nbsp; &middot; &nbsp; <a href="../index.html#whitepapers">White papers</a> &nbsp; &middot; &nbsp; <a href="mailto:noveetyai@noveetymanagement.com">Contact</a></span></div></footer>
+<dialog class="lightbox" aria-label="Expanded analysis figure"><button class="close-button" aria-label="Close image" title="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button><img alt=""><p></p></dialog>
+</body></html>
