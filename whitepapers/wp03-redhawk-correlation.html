@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GS-WP-03 | GridStack vs. RedHawk-SC on real chip designs &mdash; GridStack white paper</title><meta name="description" content="GridStack white paper GS-WP-03: GridStack 1.5 against in-design RedHawk-SC on two signed-off Fusion Compiler designs, a RISC core and a 242K-node LPU accelerator. Worst-case IR drop within 1.6%, 3.8&ndash;27&times; faster end to end."><meta property="og:title" content="GridStack GS-WP-03 | GridStack vs. RedHawk-SC on real chip designs"><meta property="og:description" content="Static and dynamic IR-drop correlation with RedHawk-SC on two real SAED32 designs: worst-case drop within 1.6%, 3.8&ndash;27&times; faster."><meta property="og:type" content="article"><link rel="icon" href="../assets/img/gridstack.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="../assets/css/gridstack.css"><script src="../assets/js/site.js" defer></script></head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap header-inner"><a class="brand" href="../index.html" aria-label="GridStack home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>GridStack</a><button class="menu-button" aria-expanded="false" aria-controls="navigation" aria-label="Toggle navigation" title="Menu"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg></button><nav class="nav" id="navigation" aria-label="Main navigation"><a href="../index.html">Overview</a><a href="../index.html#capabilities">Features &amp; capabilities</a><a href="../index.html#whitepapers" aria-current="page">White papers</a><a class="contact-link" href="#contact">Discuss your design</a></nav></div></header>
+<main id="main">
+<section class="page-intro"><div class="wrap paper-body"><p class="paper-meta"><span>GridStack white paper</span><span>GS-WP-03</span><span>Rev. 1.0</span><span>October 2026</span></p><h1>GridStack vs. RedHawk-SC on real chip designs</h1>
+<div class="paper-abstract"><strong>Abstract</strong>Benchmark grids show that a solver is fast. A sign-off team needs to know whether it gives the same answer as the tool they already trust, on a real design. This paper runs GridStack 1.5 side by side with RedHawk-SC, run in-design from Synopsys Fusion Compiler, on two chips taken through place, route and sign-off in the SAED32 process: a RISC processor core with four SRAM macros, and a Groq-style LPU accelerator with eighteen SRAM macros and a 242K-node power grid. Both tools analyse the same grid, taps and per-cell power. Across static and dynamic analysis on both designs, GridStack's worst-case IR drop agrees with RedHawk-SC within 0.6&ndash;1.6%, and it completes the analysis 3.8&ndash;11&times; faster for dynamic IR drop and 23&ndash;27&times; faster for static IR drop.</div></div></section>
+<div class="wrap paper-body">
+
+<div class="evidence" role="list" aria-label="Headline results">
+<div role="listitem"><strong>3.8&ndash;27&times;</strong><span>faster than RedHawk-SC end to end: 3.8&ndash;11&times; dynamic, 23&ndash;27&times; static</span></div>
+<div role="listitem"><strong class="blue">&le;&nbsp;1.6%</strong><span>difference in worst-case IR drop across all four analyses; 0.6&ndash;1.5% in three of them</span></div>
+<div role="listitem"><strong>242K</strong><span>power-grid nodes and 24,038 cells on the larger of two signed-off designs</span></div>
+</div>
+
+<section class="feature-section" id="question"><p class="feature-number">1 / THE QUESTION</p><h2>Does it agree with the sign-off tool, on a real chip?</h2><p class="intro-copy">Speed against a direct solver says nothing about agreement with the tool a sign-off flow is built on.</p>
+<p>The IBM benchmarks in <a href="wp01-krylov-reduction.html">GS-WP-01</a> fix the grid and the stimulus and compare solvers. A production flow asks a harder question. Given a design that has been placed, routed and signed off, with real standard cells, SRAM macros, a power mesh designed for that floorplan and a vectorless activity model, does GridStack report the same IR drop at the same cells as RedHawk-SC?</p>
+<p>To answer it, both tools were run on the same two designs, on the same server, from the same Fusion Compiler database. Every cell's result is compared one to one.</p>
+</section>
+
+<section class="feature-section" id="designs"><p class="feature-number">2 / THE DESIGNS</p><h2>Two signed-off SAED32 chips</h2><p class="intro-copy">Both designs were implemented end to end in Synopsys Fusion Compiler: synthesis, floorplan and power mesh, placement, clock tree, routing and sign-off.</p>
+<p>RISC_CORE is a compact processor core whose register files are SRAM macros. The LPU is a statically scheduled machine-learning accelerator in the style of Groq's tensor streaming processor: an 8&nbsp;&times;&nbsp;8 systolic matrix unit, a vector unit and an instruction sequencer, fed by sixteen SRAM data banks and two instruction-memory SRAMs.</p>
+<div class="table-wrap"><table><caption class="print-note">Table 1 &mdash; Design specifications.</caption><thead><tr><th scope="col">Specification</th><th scope="col">RISC_CORE</th><th scope="col">LPU accelerator</th></tr></thead><tbody>
+<tr><th scope="row">Process</th><td class="mono">SAED32, 1P9M</td><td class="mono">SAED32, 1P9M</td></tr>
+<tr><th scope="row">Die size</th><td class="mono">323.5 &times; 322.6 &micro;m</td><td class="mono">767.5 &times; 538.1 &micro;m</td></tr>
+<tr><th scope="row">Clock</th><td class="mono">200 MHz (5 ns)</td><td class="mono">400 MHz (2.5 ns)</td></tr>
+<tr><th scope="row">SRAM macros</th><td class="mono">4</td><td class="mono">18</td></tr>
+<tr><th scope="row">Powered standard cells</th><td class="mono">4,312</td><td class="mono">24,038</td></tr>
+<tr><th scope="row">Analysis corner</th><td class="mono">ss, 0.95 V, 125 &deg;C</td><td class="mono">ss, 0.95 V, 125 &deg;C</td></tr>
+<tr><th scope="row">Implementation</th><td>Fusion Compiler X-2025.06-SP3, through sign-off</td><td>Fusion Compiler X-2025.06-SP3, through sign-off</td></tr>
+</tbody></table></div>
+<div class="figure-pair">
+<figure class="figure"><button class="image-open" aria-label="Expand the RISC_CORE layout"><img src="../assets/figs/rhsc/risc_layout.png" alt="RISC_CORE routed layout with all nine metal layers; four SRAM macros outlined on the right and top, standard-cell logic in the lower left" loading="lazy"></button><figcaption><span class="step">Figure 1a &middot; RISC_CORE layout</span>Routed layout, all nine metal layers, rendered from the sign-off GDS. Dashed outlines are the SRAM macros.</figcaption></figure>
+<figure class="figure"><button class="image-open" aria-label="Expand the LPU layout"><img src="../assets/figs/rhsc/lpu_layout.png" alt="LPU routed layout with all nine metal layers; two rows of nine SRAM macros above and below a dense logic band" loading="lazy"></button><figcaption><span class="step">Figure 1b &middot; LPU layout</span>Routed layout, all nine metal layers. Eighteen SRAMs in two rows; the logic fills the 212&nbsp;&micro;m band between them.</figcaption></figure>
+</div>
+<h3>The power grids</h3>
+<p>Both grids follow the same plan: M1 rails along every standard-cell row, M2 straps over the logic, and a mesh of horizontal M7 and vertical M8 straps over the whole die, joined by stacked vias. Supply enters through ideal taps at the ends of the M8 straps. Table 2 gives the grid that both tools analysed.</p>
+<div class="figure-pair">
+<figure class="figure"><button class="image-open" aria-label="Expand the RISC_CORE power grid"><img src="../assets/figs/rhsc/risc_pg.png" alt="RISC_CORE power grid: M8 vertical straps, M7 horizontal straps, M2 straps and M1 row rails, with SRAM outlines" loading="lazy"></button><figcaption><span class="step">Figure 2a &middot; RISC_CORE power grid</span>VDD and VSS wiring from the sign-off DEF: M1 row rails, M2 straps, M7/M8 mesh.</figcaption></figure>
+<figure class="figure"><button class="image-open" aria-label="Expand the LPU power grid"><img src="../assets/figs/rhsc/lpu_pg.png" alt="LPU power grid: M8 vertical straps and M7 horizontal straps across the die, M2 straps and M1 row rails in the logic band, with eighteen SRAM outlines" loading="lazy"></button><figcaption><span class="step">Figure 2b &middot; LPU power grid</span>The same plan at 2.4&times; the die area; M5/M6 wires (not drawn) tie the SRAM power pins to the mesh.</figcaption></figure>
+</div>
+<div class="table-wrap"><table><caption class="print-note">Table 2 &mdash; Extracted power grids.</caption><thead><tr><th scope="col">Grid</th><th scope="col">RISC_CORE</th><th scope="col">LPU accelerator</th></tr></thead><tbody>
+<tr><th scope="row">Power-grid layers</th><td class="mono">M1, M2, M7, M8 + via stacks</td><td class="mono">M1, M2, M6, M7, M8 + via stacks</td></tr>
+<tr><th scope="row">Grid nodes (VDD + VSS)</th><td class="mono">27,747</td><td class="mono">242,378</td></tr>
+<tr><th scope="row">Resistors</th><td class="mono">32,272</td><td class="mono">263,258</td></tr>
+<tr><th scope="row">of which vias</th><td class="mono">8,793</td><td class="mono">43,516</td></tr>
+<tr><th scope="row">Supply taps</th><td class="mono">16</td><td class="mono">96</td></tr>
+<tr><th scope="row">M8 / M7 strap width</th><td class="mono">&mdash;</td><td class="mono">4.64 / 1.104 &micro;m</td></tr>
+<tr><th scope="row">Sheet resistance</th><td class="mono">0.1 &Omega;/&#9633; (M1&ndash;M8)</td><td class="mono">0.1 &Omega;/&#9633; (M1&ndash;M8)</td></tr>
+<tr><th scope="row">Dynamic current sources</th><td class="mono">per cell</td><td class="mono">46,518</td></tr>
+<tr><th scope="row">Transient</th><td class="mono">10 cycles, 5,000 steps of 10 ps</td><td class="mono">10 cycles, 2,500 steps of 10 ps</td></tr>
+</tbody></table></div>
+</section>
+
+<section class="feature-section" id="method"><p class="feature-number">3 / METHOD</p><h2>Same design, same inputs, cell-by-cell comparison</h2><p class="intro-copy">The comparison removes every difference except the analysis itself.</p>
+<div class="flow">
+<article><h3>Sign-off database</h3><p>Fusion Compiler opens the signed-off block. RedHawk-SC runs in-design, with vectorless activity, the SAED32 Cmax interconnect technology and the design's own liberty files.</p></article>
+<article><h3>Shared grid and stimulus</h3><p>The DEF, LEF, tap locations, timing windows and parasitics that Fusion Compiler hands to RedHawk-SC are converted to a GridStack netlist, with resistances from the same technology file and per-cell power and current from the same analysis.</p></article>
+<article><h3>Cell-by-cell comparison</h3><p>Both tools report the effective drop, VDD minus VSS, at every cell's power pins. Each cell is matched by name and compared, along with the worst cell and the top-50 list.</p></article>
+</div>
+<ul>
+<li><b>Static IR drop</b> &mdash; each cell draws its average power divided by the supply voltage as a DC current between its VDD and VSS rails.</li>
+<li><b>Dynamic IR drop, LPU</b> &mdash; GridStack uses RedHawk-SC's own per-cell demand-current waveforms and cell decoupling capacitance, imported from the in-design run, plus the grid capacitance RedHawk-SC reports.</li>
+<li><b>Dynamic IR drop, RISC_CORE</b> &mdash; GridStack uses a vectorless switching model built from RedHawk-SC's per-cell power and Fusion Compiler's clock arrival times and switching windows, with a cell decoupling capacitance of 2 fF per cell.</li>
+</ul>
+<div class="reading-note"><strong>All results use GridStack's sign-off mode:</strong> a full-order back-Euler transient over every grid node, with no model reduction. GridStack also provides a fast mode, the reduced-order Krylov engine of <a href="wp01-krylov-reduction.html">GS-WP-01</a>, for rapid what-if evaluation during floorplanning and decap planning.</div>
+</section>
+
+<section class="feature-section" id="accuracy"><p class="feature-number">4 / ACCURACY</p><h2>Worst-case drop within 1.6%, on every analysis</h2><p class="intro-copy">The two tools find the same worst-case IR drop, at the same cells.</p>
+<div class="table-wrap"><table><caption class="print-note">Table 3 &mdash; Worst-case effective IR drop and per-cell agreement.</caption><thead><tr><th scope="col">Design &middot; analysis</th><th scope="col">Cells</th><th scope="col">RedHawk-SC worst</th><th scope="col">GridStack worst</th><th scope="col">Difference</th><th scope="col">Correlation</th><th scope="col">Top-50 shared</th></tr></thead><tbody>
+<tr><th scope="row">RISC_CORE &middot; static</th><td class="mono">4,279</td><td class="mono">19.43 mV</td><td class="mono">19.55 mV</td><td class="mono">+0.6%</td><td class="mono">1.000</td><td class="mono">50 / 50</td></tr>
+<tr><th scope="row">RISC_CORE &middot; dynamic</th><td class="mono">4,279</td><td class="mono">160.19 mV</td><td class="mono">157.61 mV</td><td class="mono">&minus;1.6%</td><td class="mono">0.948</td><td class="mono">40 / 50</td></tr>
+<tr><th scope="row">LPU &middot; static</th><td class="mono">24,038</td><td class="mono">7.589 mV</td><td class="mono">7.702 mV</td><td class="mono">+1.5%</td><td class="mono">0.9998</td><td class="mono">44 / 50</td></tr>
+<tr><th scope="row">LPU &middot; dynamic</th><td class="mono">24,038</td><td class="mono">35.79 mV</td><td class="mono">36.32 mV</td><td class="mono">+1.5%</td><td class="mono">0.988</td><td class="mono">41 / 50</td></tr>
+</tbody></table></div>
+<figure class="figure"><button class="image-open" aria-label="Expand the per-cell accuracy scatter plots"><img src="../assets/figs/rhsc/accuracy_scatter.png" alt="Four scatter plots of GridStack against RedHawk-SC worst effective drop per cell, for RISC_CORE and LPU, static and dynamic; points lie along the diagonal" loading="lazy"></button><figcaption><span class="step">Figure 3 &middot; Per-cell agreement</span>Worst effective drop at every cell, GridStack against RedHawk-SC. The dashed line is perfect agreement.</figcaption></figure>
+<p>In static analysis the two tools agree to within 0.6% on RISC_CORE and 1.5% on the LPU, with per-cell correlation of 1.000 and 0.9998. Both name the same worst cell on RISC_CORE, and their top-50 lists are identical. With RedHawk-SC's own current waveforms, the LPU's dynamic worst-case drop agrees to 1.5% and the per-cell correlation is 0.988. On RISC_CORE, whose dynamic stimulus is GridStack's own vectorless model, the worst-case drop agrees to 1.6% and 40 of the top 50 cells are shared; mid-range cells read higher because the two current models place switching events differently in time.</p>
+</section>
+
+<section class="feature-section" id="speed"><p class="feature-number">5 / SPEED</p><h2>3.8&ndash;11&times; faster dynamic, 23&ndash;27&times; faster static</h2><p class="intro-copy">Measured end to end on the same server, from launch to written results.</p>
+<figure class="figure"><button class="image-open" aria-label="Expand the wall-time chart"><img src="../assets/figs/rhsc/walltime.png" alt="Bar chart of wall time: RISC_CORE static 198 s vs 8.6 s, dynamic 447 s vs 41.1 s; LPU static 566 s vs 20.8 s, dynamic 876 s vs 230 s" loading="lazy"></button><figcaption><span class="step">Figure 4 &middot; Wall time</span>End-to-end wall time per analysis, RedHawk-SC against GridStack, with the speedup above each pair.</figcaption></figure>
+<div class="table-wrap"><table><caption class="print-note">Table 4 &mdash; Runtime.</caption><thead><tr><th scope="col">Design &middot; analysis</th><th scope="col">RedHawk-SC wall</th><th scope="col">GridStack wall</th><th scope="col">Speedup</th><th scope="col">RedHawk-SC solve</th><th scope="col">GridStack solve</th></tr></thead><tbody>
+<tr><th scope="row">RISC_CORE &middot; static</th><td class="mono">198 s</td><td class="mono">8.6 s</td><td class="mono">23.0&times;</td><td class="mono">0.48 s</td><td class="mono">0.17 s</td></tr>
+<tr><th scope="row">RISC_CORE &middot; dynamic</th><td class="mono">447 s</td><td class="mono">41.1 s</td><td class="mono">10.9&times;</td><td class="mono">213 s</td><td class="mono">24.1 s</td></tr>
+<tr><th scope="row">LPU &middot; static</th><td class="mono">566 s</td><td class="mono">20.8 s</td><td class="mono">27.2&times;</td><td class="mono">1.6 s</td><td class="mono">1.4 s</td></tr>
+<tr><th scope="row">LPU &middot; dynamic</th><td class="mono">876 s</td><td class="mono">230 s</td><td class="mono">3.8&times;</td><td class="mono">254 s</td><td class="mono">153 s</td></tr>
+</tbody></table></div>
+<p class="note">Host: 2 &times; Intel Xeon E5-2699 v4 (88 threads), 314 GB, Rocky Linux 8.10. RedHawk-SC ran in-design from Fusion Compiler with 8 local workers; its wall time includes its in-design data preparation, model build, solve and reports. GridStack's wall time covers start-up, netlist parsing, the solve and result writing; its full-order solve runs on a single core. The one-time conversion of the Fusion Compiler collateral into a GridStack netlist is not included.</p>
+</section>
+
+<section class="feature-section" id="takeaways"><p class="feature-number">6 / TAKEAWAYS</p><h2>Sign-off agreement at a fraction of the turnaround</h2><p class="intro-copy">On two real, signed-off designs, GridStack reproduces RedHawk-SC's IR-drop answer and returns it several times sooner.</p>
+<ul>
+<li><b>Same answer.</b> Worst-case effective IR drop within 0.6&ndash;1.6% of RedHawk-SC in static and dynamic analysis on both designs, with per-cell correlation of 0.948&ndash;1.000 and the same hotspots at the top of the list.</li>
+<li><b>Sooner.</b> Dynamic analysis 3.8&ndash;11&times; faster and static analysis 23&ndash;27&times; faster end to end, short enough to run IR drop on every floorplan or power-mesh iteration rather than once at the end.</li>
+<li><b>From the existing flow.</b> GridStack reads the same Fusion Compiler collateral that RedHawk-SC uses: DEF, LEF, tap locations, timing windows, parasitics and per-cell power. No separate extraction or layout database is needed.</li>
+<li><b>Two modes.</b> Sign-off mode for the numbers that go into a review; fast mode (<a href="wp01-krylov-reduction.html">GS-WP-01</a>) for quick what-if sweeps, with results that can be viewed at die level as in <a href="wp02-fullchip-visualization.html">GS-WP-02</a>.</li>
+</ul>
+</section>
+
+<nav class="paper-nav" aria-label="White paper series"><span>&larr; Previous: <a href="wp02-fullchip-visualization.html">GS-WP-02 &mdash; Full-chip IR-drop visualization</a></span><span><a href="../index.html#whitepapers">All white papers</a> &rarr;</span></nav>
+</div>
+<section class="contact-band" id="contact"><div class="wrap contact-inner"><div><p class="eyebrow">From evidence to your design</p><h2>Correlate GridStack on your own chip.</h2><p>Bring a Fusion Compiler design and your RedHawk-SC setup. We will run both on the same database and compare them cell by cell.</p></div><a class="button" href="mailto:noveetyai@noveetymanagement.com?subject=GridStack%20design%20discussion%20(GS-WP-03)">Request a walkthrough <svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a></div></section>
+</main>
+<footer><div class="wrap footer-inner"><span>&copy; 2026 NoveetyAI, Inc. / GridStack &mdash; GS-WP-03, Rev. 1.0. RedHawk-SC and Fusion Compiler are trademarks of their respective owners.</span><span><a href="../index.html">Product overview</a> &nbsp; &middot; &nbsp; <a href="../index.html#whitepapers">White papers</a> &nbsp; &middot; &nbsp; <a href="mailto:noveetyai@noveetymanagement.com">Contact</a></span></div></footer>
+<dialog class="lightbox" aria-label="Expanded analysis figure"><button class="close-button" aria-label="Close image" title="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button><img alt=""><p></p></dialog>
+</body></html>

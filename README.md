@@ -84,8 +84,9 @@ The site is organized into three areas:
 |---|-------|--------|
 | GS-WP-01 | [Advanced Krylov Subspace Reduction for Million-Node Transient Power-Grid Analysis](whitepapers/wp01-krylov-reduction.html) | Published |
 | GS-WP-02 | [Full-Chip IR-Drop Visualization at Million-Node Scale](whitepapers/wp02-fullchip-visualization.html) | Published |
-| GS-WP-03 | Domain Decomposition for Multi-Core and GPU Scale-Out | In preparation |
-| GS-WP-04 | GridStack in Agentic EDA Sign-Off Flows | In preparation |
+| GS-WP-03 | [GridStack vs. RedHawk-SC on Real Chip Designs](whitepapers/wp03-redhawk-correlation.html) | Published |
+| GS-WP-04 | Domain Decomposition for Multi-Core and GPU Scale-Out | In preparation |
+| GS-WP-05 | GridStack in Agentic EDA Sign-Off Flows | In preparation |
 
 To add a paper: copy an existing file in `whitepapers/`, bump the `GS-WP-nn` number, and add a
 `.capability` card to the `#whitepapers` section of `index.html` (replace the `In preparation` note
@@ -100,7 +101,8 @@ gridstack_io/
 ├── index.html                          # landing page: features, white paper index, contact
 ├── whitepapers/
 │   ├── wp01-krylov-reduction.html      # GS-WP-01 — method + full validation results
-│   └── wp02-fullchip-visualization.html# GS-WP-02 — full-chip structure / 2D / 3D drop views
+│   ├── wp02-fullchip-visualization.html# GS-WP-02 — full-chip structure / 2D / 3D drop views
+│   └── wp03-redhawk-correlation.html   # GS-WP-03 — GridStack vs RedHawk-SC on RISC_CORE and LPU
 ├── gen_plots.py                        # regenerates the GS-WP-01 charts
 ├── README.md                           # this file
 └── assets/
@@ -113,7 +115,8 @@ gridstack_io/
     └── figs/
         ├── accuracy_comparison.png     # Figure 1 in GS-WP-01
         ├── speedup_comparison.png      # Figure 2 in GS-WP-01
-        └── views/                      # Figures 1a-c / 2a-c in GS-WP-02
+        ├── views/                      # Figures 1a-c / 2a-c in GS-WP-02
+        └── rhsc/                       # Figures 1-4 in GS-WP-03 (layouts, power grids, accuracy, wall time)
             ├── ibmpg2t_structure_2d.png
             ├── ibmpg2t_drop_2d.png
             ├── ibmpg2t_drop_3d.png
