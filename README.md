@@ -82,14 +82,15 @@ The site is organized into three areas:
 
 | # | Title | Status |
 |---|-------|--------|
-| GS-WP-01 | [Advanced Krylov Subspace Reduction for Million-Node Transient Power-Grid Analysis](whitepapers/wp01-krylov-reduction.html) | Published |
-| GS-WP-02 | [Full-Chip IR-Drop Visualization at Million-Node Scale](whitepapers/wp02-fullchip-visualization.html) | Published |
 | GS-WP-03 | [GridStack vs. a Commercial Sign-Off Tool on Real Chip Designs](whitepapers/wp03-signoff-correlation.html) | Published |
+| GS-WP-02 | [Full-Chip IR-Drop Visualization at Million-Node Scale](whitepapers/wp02-fullchip-visualization.html) | Published |
+| GS-WP-01 | [Advanced Krylov Subspace Reduction for Million-Node Transient Power-Grid Analysis](whitepapers/wp01-krylov-reduction.html) | Published |
 | GS-WP-04 | Domain Decomposition for Multi-Core and GPU Scale-Out | In preparation |
 | GS-WP-05 | GridStack in Agentic EDA Sign-Off Flows | In preparation |
 
 To add a paper: copy an existing file in `whitepapers/`, bump the `GS-WP-nn` number, and add a
-`.capability` card to the `#whitepapers` section of `index.html` (replace the `In preparation` note
+`.capability` card at the **top** of the `#whitepapers` section of `index.html` (published papers
+are listed newest first, with the in-preparation cards last) (replace the `In preparation` note
 with a `.text-link` to the new file once it is published).
 
 ---
